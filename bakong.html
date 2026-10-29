@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ទូទាត់តាមបាគង | ធនាគារ មហានគរ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="bank-page.css">
+</head>
+<body>
+<script src="splash.js"></script>
+
+<div class="pg">
+  <div class="pg-img"><img src="ABCIMG.png" alt=""></div>
+  <div class="pg-side">
+    <a class="brand rise" href="index.html#dashboard"><img src="LOGOIMGA.png" alt=""><span><b>ធនាគារ មហានគរ</b><i>Mohanokor Bank of Cambodia Co., Ltd.</i></span></a>
+    <h1 class="ttl rise" style="--d:.15s">ទូទាត់តាមបាគង</h1>
+    <div class="card rise" style="--d:.3s" id="card"></div>
+    <div class="certs rise" style="--d:.5s">
+      <img class="a" src="ONEIMG.png" alt="PCI DSS Compliant"><img class="b" src="TWOIMG.png" alt=""><img class="c" src="THREEIMG.png" alt="">
+    </div>
+  </div>
+</div>
+<script>setTimeout(function () { document.body.classList.add('go'); }, 6500);</script>
+
+<script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyC821EXMqnw-J7c0XV06X860gqSEhBgp00",
+    authDomain: "moit-de6db.firebaseapp.com",
+    projectId: "moit-de6db",
+    storageBucket: "moit-de6db.firebasestorage.app",
+    messagingSenderId: "734578370872",
+    appId: "1:734578370872:web:806dc4ee7437b38909f9cd"
+  };
+  const CDN = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const $ = (id) => document.getElementById(id);
+  const card = $('card');
+  const NF = new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  const money = (n, c) => NF.format(Number(n) || 0) + (c === 'USD' ? ' $' : ' \u17DB');
+  const digits = (el) => el.addEventListener('input', () => { el.value = el.value.replace(/\D/g, ''); });
+
+  const SV = (d) => '<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+  const IC = { ok: SV('<circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/>'), no: SV('<circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/>'), back: SV('<path d="m15 18-6-6 6-6"/>') };
+  function hint(el, k, t) { el.className = 'hint' + (k ? ' ' + k : ''); el.innerHTML = k ? IC[k] : ''; el.appendChild(document.createTextNode(t)); }
+  let profile = null, acct = null, unsubAcct = null, who = null, v = { cur: 'KHR', to: '', amt: '', note: '' };
+  function setView(html) { card.innerHTML = html; card.classList.remove('swap'); void card.offsetWidth; card.classList.add('swap'); }
+  const fullName = () => profile ? ((profile.familyName || '') + ' ' + (profile.givenName || '')).trim() : '';
+  const row = (l, t) => { const d = document.createElement('div'); d.className = 'row'; const a = document.createElement('span'); a.textContent = l; const b = document.createElement('b'); b.textContent = t || '\u2014'; d.append(a, b); return d; };
+
+  try {
+    const [appM, authM, fs] = await Promise.all([import(CDN + 'firebase-app.js'), import(CDN + 'firebase-auth.js'), import(CDN + 'firebase-firestore.js')]);
+    const app = appM.initializeApp(firebaseConfig, 'bank');
+    const auth = authM.getAuth(app), db = fs.getFirestore(app);
+    const paintMe = () => {
+      if (!$('mn')) return;
+      $('mn').textContent = acct && acct.accountNumber ? acct.accountNumber.replace(/^(\d)(\d{5})(\d{5})$/, '$1 $2 $3') : '-';
+      $('mb').textContent = money(acct && acct.balanceKHR, 'KHR') + '  |  ' + money(acct && acct.balanceUSD, 'USD');
+    };
+    const bal = (c) => Number(acct && (c === 'USD' ? acct.balanceUSD : acct.balanceKHR)) || 0;
+
+    async function transfer(toAcct, cur, amt, note) {
+      const me = auth.currentUser, ls = await fs.getDoc(fs.doc(db, 'bank_lookup', toAcct));
+      if (!ls.exists()) throw { code: 'app/no-recipient' };
+      const to = ls.data(); if (to.uid === me.uid) throw { code: 'app/self' };
+      const f = cur === 'USD' ? 'balanceUSD' : 'balanceKHR', b = fs.writeBatch(db);
+      b.update(fs.doc(db, 'bank_accounts', me.uid), { [f]: fs.increment(-amt) });
+      b.update(fs.doc(db, 'bank_accounts', to.uid), { [f]: fs.increment(amt) });
+      b.set(fs.doc(fs.collection(db, 'bank_tx')), { uid: me.uid, type: 'debit', amount: amt, currency: cur, note: 'ផ្ទេរទៅ ' + to.name + (note ? ' - ' + note : ''), createdAt: fs.serverTimestamp() });
+      b.set(fs.doc(fs.collection(db, 'bank_tx')), { uid: to.uid, fromUid: me.uid, type: 'credit', amount: amt, currency: cur, note: 'ទទួលពី ' + fullName() + (note ? ' - ' + note : ''), createdAt: fs.serverTimestamp() });
+      await b.commit();
+    }
+    function viewLogin() {
+      setView('<div class="f"><label for="li">លេខប្រព័ន្ធ</label><input id="li" inputmode="numeric" maxlength="8" placeholder="លេខប្រព័ន្ធ ៨ ខ្ទង់" autocomplete="username"></div>' +
+        '<div class="f"><label for="lp">ពាក្យសម្ងាត់</label><input id="lp" type="password" placeholder="ពាក្យសម្ងាត់" autocomplete="current-password"></div>' +
+        '<p class="err" id="le"></p><button class="btn" id="lb" type="button">ចូល</button>' +
+        '<p class="sub">មិនទាន់មានគណនី? <a href="index.html#register">ចុះឈ្មោះ</a></p>');
+      digits($('li'));
+      const go = async () => {
+        const id = $('li').value, pw = $('lp').value;
+        if (!/^\d{8}$/.test(id) || !pw) { $('le').textContent = 'សូមបញ្ចូលលេខប្រព័ន្ធ ៨ ខ្ទង់ និងពាក្យសម្ងាត់'; return; }
+        $('lb').disabled = true; $('le').textContent = '';
+        try { await authM.signInWithEmailAndPassword(auth, id + '@mnk-bank.local', pw); }
+        catch (e) { $('le').textContent = 'លេខប្រព័ន្ធ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ'; if ($('lb')) $('lb').disabled = false; }
+      };
+      $('lb').onclick = go;
+      $('lp').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+    }
+
+    function viewForm() {
+      who = null;
+      setView('<div class="me"><small>ពីគណនី</small><b id="mn"></b><span id="mb"></span></div>' +
+        '<div class="f"><label for="cu">រូបិយប័ណ្ណ</label><select id="cu"><option value="KHR">រៀល (\u17DB)</option><option value="USD">ដុល្លារ ($)</option></select><div class="hint" id="cb"></div></div>' +
+        '<div class="f"><label for="to">លេខគណនីអ្នកទទួល</label><input id="to" inputmode="numeric" maxlength="11" placeholder="លេខគណនី ១១ ខ្ទង់" autocomplete="off"><div class="hint" id="tw"></div></div>' +
+        '<div class="f"><label for="am">ចំនួនទឹកប្រាក់</label><input id="am" inputmode="decimal" placeholder="0" autocomplete="off"></div>' +
+        '<div class="f"><label for="nt">កំណត់ចំណាំ (មិនបង្ខំ)</label><input id="nt" maxlength="60" placeholder="កំណត់ចំណាំ"></div>' +
+        '<p class="err" id="er"></p><button class="btn" id="go" type="button">បន្ទាប់</button>' +
+        '<a class="back" href="index.html#dashboard">' + IC.back + 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង</a>');
+      const cu = $('cu'), to = $('to'), am = $('am'), nt = $('nt'), er = $('er'); let tok = 0;
+      cu.value = v.cur; to.value = v.to; am.value = v.amt; nt.value = v.note; digits(to); paintMe();
+      const showBal = () => { $('cb').textContent = 'សមតុល្យអាចប្រើបាន៖ ' + money(bal(cu.value), cu.value); };
+      showBal();
+      cu.onchange = () => { showBal(); er.textContent = ''; };
+      [am, nt].forEach((e) => e.addEventListener('input', () => { er.textContent = ''; }));
+      async function look() {
+        const n = to.value, h = $('tw'); who = null; er.textContent = '';
+        if (!/^\d{11}$/.test(n)) { h.className = 'hint'; h.textContent = ''; return; }
+        if (acct && n === acct.accountNumber) { hint(h, 'no', 'មិនអាចផ្ទេរទៅគណនីខ្លួនឯងបានទេ'); return; }
+        const my = ++tok; hint(h, '', 'កំពុងស្វែងរក...');
+        try {
+          const s = await fs.getDoc(fs.doc(db, 'bank_lookup', n)); if (my !== tok) return;
+          if (s.exists()) { who = s.data(); hint(h, 'ok', who.name); } else hint(h, 'no', 'រកមិនឃើញគណនីនេះទេ');
+        } catch (e) { if (my === tok) hint(h, 'no', 'មានបញ្ហា សូមសាកល្បងម្តងទៀត'); }
+      }
+      to.addEventListener('input', look); look();
+      $('go').onclick = () => {
+        const n = to.value, c = cu.value, s = am.value.replace(/,/g, '').trim();
+        if (!/^\d{11}$/.test(n)) { er.textContent = 'លេខគណនីត្រូវមាន ១១ ខ្ទង់'; return; }
+        if (acct && n === acct.accountNumber) { er.textContent = 'មិនអាចផ្ទេរទៅគណនីខ្លួនឯងបានទេ'; return; }
+        if (!who) { er.textContent = 'រកមិនឃើញគណនីអ្នកទទួល'; return; }
+        if (!(c === 'USD' ? /^\d+(\.\d{1,2})?$/ : /^\d+$/).test(s) || !(parseFloat(s) > 0)) { er.textContent = c === 'USD' ? 'ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ (ទសភាគអតិបរមា ២ ខ្ទង់)' : 'ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ (ត្រូវជាចំនួនគត់)'; return; }
+        const num = Math.round(parseFloat(s) * 100) / 100;
+        if (num > bal(c)) { er.textContent = 'សមតុល្យមិនគ្រប់គ្រាន់'; return; }
+        v = { cur: c, to: n, amt: s, note: nt.value.trim() }; viewReview(num);
+      };
+    }
+
+    function viewReview(num) {
+      setView('<div id="rv"></div><p class="err" id="er"></p><div class="acts"><button class="btn ghost" id="bk" type="button">ត្រឡប់ក្រោយ</button><button class="btn" id="ok" type="button">បញ្ជាក់ការផ្ទេរ</button></div>');
+      const box = document.createElement('div'); box.className = 'sum';
+      const am = document.createElement('div'); am.className = 'amt'; am.textContent = money(num, v.cur);
+      box.append(am, row('ពីគណនី', acct && acct.accountNumber), row('ទៅកាន់', who.name), row('លេខគណនីអ្នកទទួល', v.to), row('កំណត់ចំណាំ', v.note));
+      $('rv').appendChild(box);
+      $('bk').onclick = viewForm;
+      $('ok').onclick = async () => {
+        $('ok').disabled = true; $('bk').disabled = true; $('ok').textContent = 'កំពុងដំណើរការ...'; $('er').textContent = '';
+        try { await transfer(v.to, v.cur, num, v.note); viewDone(num); }
+        catch (e) {
+          $('ok').disabled = false; $('bk').disabled = false; $('ok').textContent = 'បញ្ជាក់ការផ្ទេរ'; const c = e && e.code;
+          $('er').textContent = c === 'app/no-recipient' ? 'រកមិនឃើញគណនីអ្នកទទួល' : c === 'app/self' ? 'មិនអាចផ្ទេរទៅគណនីខ្លួនឯងបានទេ' : c === 'permission-denied' ? 'គ្មានសិទ្ធិអនុវត្ត (សមតុល្យមិនគ្រប់គ្រាន់ ឬ rules)' : 'មានបញ្ហា សូមសាកល្បងម្តងទៀត';
+        }
+      };
+    }
+
+    function viewDone(num) {
+      setView('<div class="done"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>' +
+        '<h3>ការផ្ទេរប្រាក់បានជោគជ័យ</h3><div class="amt" id="da"></div><p id="dp"></p></div>' +
+        '<a class="btn" href="index.html#dashboard">ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង</a><button class="btn ghost" id="again" type="button">ផ្ទេរម្តងទៀត</button>');
+      $('da').textContent = money(num, v.cur); $('dp').textContent = 'ទៅកាន់ ' + who.name;
+      v = { cur: v.cur, to: '', amt: '', note: '' };
+      $('again').onclick = viewForm;
+    }
+
+    authM.onAuthStateChanged(auth, async (u) => {
+      if (unsubAcct) { unsubAcct(); unsubAcct = null; }
+      acct = null; profile = null;
+      if (!u) viewLogin();
+      else {
+        try { const s = await fs.getDoc(fs.doc(db, 'bank_users', u.uid)); if (s.exists()) profile = s.data(); } catch (e) {}
+        unsubAcct = fs.onSnapshot(fs.doc(db, 'bank_accounts', u.uid), (s) => { acct = s.exists() ? s.data() : null; paintMe(); });
+        viewForm();
+      }
+      window.dispatchEvent(new Event('bank-auth'));
+    });
+  } catch (e) {
+    console.error(e);
+    setView('<p class="err">មិនអាចតភ្ជាប់ប្រព័ន្ធបានទេ សូមពិនិត្យអ៊ីនធឺណិត</p>');
+    window.dispatchEvent(new Event('bank-auth'));
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>បង្កើតបណ្ណ | ធនាគារ មហានគរ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="bank-page.css">
+<style>
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+  .head b { font-size: 16px; color: var(--blue); }
+  .head small { color: #6A78A0; font-size: 13.5px; margin-left: 6px; }
+  .mini { height: 38px; padding: 0 14px; border: 0; border-radius: 10px; background: var(--blue); color: #fff; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background .2s, transform .1s, opacity .2s; }
+  .mini:hover { background: #02276F; } .mini:active { transform: scale(.97); } .mini:disabled { opacity: .5; cursor: default; }
+  .mini .ic { margin: 0; }
+  .empty { text-align: center; padding: 34px 10px 14px; color: #6A78A0; font-size: 14.5px; line-height: 1.8; animation: up .5s both; }
+  .empty svg { color: var(--blue); opacity: .75; margin-bottom: 8px; }
+  .cw { margin-top: 16px; perspective: 1100px; animation: up .55s var(--d, 0s) both; }
+  .cw.new .vc { animation: pop .6s both, glow 1.6s ease-out .3s; }
+  @keyframes glow { 0% { box-shadow: 0 0 0 0 rgba(30, 52, 200, .5); } 100% { box-shadow: 0 0 0 26px rgba(30, 52, 200, 0); } }
+  .vc { position: relative; aspect-ratio: 1.586; border-radius: 18px; transform-style: preserve-3d; transition: transform .75s cubic-bezier(.2, .8, .2, 1); cursor: pointer; }
+  .vc.flip { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; border-radius: 18px; padding: 16px 20px; color: #fff; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: linear-gradient(120deg, #0A2A9C, #1E34C8 55%, #3A57E8); box-shadow: 0 14px 30px rgba(3, 49, 152, .25); display: flex; flex-direction: column; }
+  .vc.usd .face { background: linear-gradient(120deg, #0B2D5C, #0E5FA8 55%, #1E8FD0); }
+  .face::before { content: ''; position: absolute; width: 220px; height: 220px; border-radius: 50%; background: rgba(255, 255, 255, .08); right: -60px; top: -90px; pointer-events: none; }
+  .face.bk { transform: rotateY(180deg); padding: 0; }
+  .vc.frozen .face { filter: grayscale(.85) brightness(.9); }
+  .tp { display: flex; align-items: center; gap: 8px; position: relative; }
+  .tp img { width: 28px; height: 28px; border-radius: 50%; background: #fff; }
+  .tp span { font-size: 14px; font-weight: 500; }
+  .tp em { margin-left: auto; font-style: normal; font-size: 12px; padding: 3px 10px; border: 1px solid rgba(255, 255, 255, .6); border-radius: 20px; }
+  .chip { width: 42px; height: 30px; margin-top: 14px; border-radius: 6px; background: linear-gradient(135deg, #F4D98A, #C79A33); position: relative; }
+  .chip::after { content: ''; position: absolute; inset: 6px 10px; border: 1px solid rgba(90, 60, 0, .35); border-radius: 3px; }
+  .vs { position: absolute; right: 20px; top: 62px; font-size: 22px; font-weight: 700; font-style: italic; letter-spacing: .02em; opacity: .95; }
+  .no { margin-top: auto; font-size: clamp(16px, 4.4vw, 21px); letter-spacing: .12em; font-weight: 500; font-variant-numeric: tabular-nums; position: relative; }
+  .bt { display: flex; justify-content: space-between; margin-top: 10px; position: relative; }
+  .bt small { display: block; font-size: 10.5px; opacity: .75; } .bt b { display: block; font-size: 13.5px; font-weight: 500; letter-spacing: .05em; }
+  .sp { height: 40px; background: #0B1330; margin-top: 22px; }
+  .cv { margin: 18px 20px 0; background: #fff; color: var(--ink); border-radius: 6px; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .cv small { font-size: 12px; color: #6A78A0; } .cv b { font-size: 16px; letter-spacing: .15em; }
+  .face.bk p { margin: auto 20px 14px; font-size: 12px; opacity: .8; }
+  .fz { position: absolute; inset: 0; border-radius: 18px; display: none; align-items: center; justify-content: center; background: rgba(8, 20, 60, .35); color: #fff; font-weight: 600; pointer-events: none; transform: translateZ(1px); }
+  .vc.frozen .fz { display: flex; } .vc.flip .fz { display: none; }
+  .ca { display: flex; gap: 8px; margin-top: 10px; }
+  .ca button { flex: 1; height: 38px; border: 1.5px solid #CBD6EE; border-radius: 10px; background: #fff; color: var(--blue); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 2px; transition: background .2s, color .2s; }
+  .ca button:hover { background: #EDF2FC; } .ca button.dg { color: var(--red); border-color: #F0C9C4; } .ca button.dg.sure { background: var(--red); color: #fff; }
+  .ca .ic { margin: 0 4px 0 0; }
+</style>
+</head>
+<body>
+<script src="splash.js"></script>
+
+<div class="pg">
+  <div class="pg-img"><img src="ABCIMG.png" alt=""></div>
+  <div class="pg-side">
+    <a class="brand rise" href="index.html#dashboard"><img src="LOGOIMGA.png" alt=""><span><b>ធនាគារ មហានគរ</b><i>Mohanokor Bank of Cambodia Co., Ltd.</i></span></a>
+    <h1 class="ttl rise" style="--d:.15s">បង្កើតបណ្ណ</h1>
+    <div class="card rise" style="--d:.3s" id="card"></div>
+    <div class="certs rise" style="--d:.5s">
+      <img class="a" src="ONEIMG.png" alt="PCI DSS Compliant"><img class="b" src="TWOIMG.png" alt=""><img class="c" src="THREEIMG.png" alt="">
+    </div>
+  </div>
+</div>
+<script>setTimeout(function () { document.body.classList.add('go'); }, 6500);</script>
+
+<script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyC821EXMqnw-J7c0XV06X860gqSEhBgp00",
+    authDomain: "moit-de6db.firebaseapp.com",
+    projectId: "moit-de6db",
+    storageBucket: "moit-de6db.firebasestorage.app",
+    messagingSenderId: "734578370872",
+    appId: "1:734578370872:web:806dc4ee7437b38909f9cd"
+  };
+  const CDN = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const $ = (id) => document.getElementById(id);
+  const card = $('card');
+  const digits = (el) => el.addEventListener('input', () => { el.value = el.value.replace(/\D/g, ''); });
+  const SV = (d, s) => '<svg class="ic" width="' + (s || 16) + '" height="' + (s || 16) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+  const EYE = '<path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/>';
+  const IC = {
+    back: SV('<path d="m15 18-6-6 6-6"/>'), plus: SV('<path d="M12 5v14M5 12h14"/>'),
+    eye: SV(EYE), eyeoff: SV(EYE + '<path d="M3 3l18 18"/>'),
+    lock: SV('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
+    unlock: SV('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>'),
+    trash: SV('<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>'),
+    card: SV('<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>', 44)
+  };
+  let profile = null, cards = [], loaded = false, cerr = false, unsubC = null, mode = 'list', made = '';
+  let rerender = () => {};   // set once viewList exists (it lives inside the try block, cardEl does not)
+  const revealed = new Set(), flipped = new Set();
+  function setView(html) { card.innerHTML = html; card.classList.remove('swap'); void card.offsetWidth; card.classList.add('swap'); }
+  const grp = (n) => n.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+  function cardEl(c, withActions, ops) {
+    const rev = revealed.has(c.id), el = document.createElement('div');
+    el.className = 'cw' + (c.id === made ? ' new' : '');
+    el.innerHTML = '<div class="vc' + (c.currency === 'USD' ? ' usd' : '') + (c.status === 'frozen' ? ' frozen' : '') + (flipped.has(c.id) ? ' flip' : '') + '">' +
+      '<div class="face"><div class="tp"><img src="LOGOIMGA.png" alt=""><span>ធនាគារ មហានគរ</span><em class="cu"></em></div><div class="chip"></div><div class="vs">VISA</div><div class="no"></div>' +
+      '<div class="bt"><div><small>ឈ្មោះលើបណ្ណ</small><b class="ho"></b></div><div><small>ផុតកំណត់</small><b class="ex"></b></div></div></div>' +
+      '<div class="face bk"><div class="sp"></div><div class="cv"><small>CVV</small><b class="cc"></b></div><p>បណ្ណ VISA Debit \u00B7 Mohanokor Bank of Cambodia</p></div>' +
+      '<div class="fz"><span>' + IC.lock + 'បានបង្កក</span></div></div>';
+    const q = (s) => el.querySelector(s);
+    q('.cu').textContent = c.currency === 'USD' ? 'USD' : 'KHR';
+    q('.no').textContent = c.number ? (rev ? grp(c.number) : '\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 ' + c.number.slice(-4)) : '\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022';
+    q('.ho').textContent = c.holder || 'YOUR NAME';
+    q('.ex').textContent = c.exp || '\u2022\u2022/\u2022\u2022';
+    q('.cc').textContent = c.cvv && rev ? c.cvv : '\u2022\u2022\u2022';
+    const vc = q('.vc');
+    vc.onclick = () => { const f = vc.classList.toggle('flip'); f ? flipped.add(c.id) : flipped.delete(c.id); };
+    if (withActions) {
+      const a = document.createElement('div'); a.className = 'ca';
+      a.innerHTML = '<button type="button" class="b1">' + (rev ? IC.eyeoff + 'លាក់' : IC.eye + 'បង្ហាញ') + '</button><button type="button" class="b2">' + (c.status === 'frozen' ? IC.unlock + 'ដោះ' : IC.lock + 'បង្កក') + '</button><button type="button" class="b3 dg">' + IC.trash + 'បិទបណ្ណ</button>';
+      a.querySelector('.b1').onclick = () => { rev ? revealed.delete(c.id) : revealed.add(c.id); rerender(); };
+      a.querySelector('.b2').onclick = () => ops.freeze(c);
+      const d = a.querySelector('.b3');
+      d.onclick = () => { if (!d.classList.contains('sure')) { d.classList.add('sure'); d.textContent = 'បញ្ជាក់?'; setTimeout(() => { if (d.isConnected) { d.classList.remove('sure'); d.innerHTML = IC.trash + 'បិទបណ្ណ'; } }, 3000); } else ops.del(c); };
+      el.appendChild(a);
+    }
+    return el;
+  }
+
+  try {
+    const [appM, authM, fs] = await Promise.all([import(CDN + 'firebase-app.js'), import(CDN + 'firebase-auth.js'), import(CDN + 'firebase-firestore.js')]);
+    const app = appM.initializeApp(firebaseConfig, 'bank');
+    const auth = authM.getAuth(app), db = fs.getFirestore(app);
+    const ops = {
+      freeze: async (c) => { try { await fs.updateDoc(fs.doc(db, 'bank_cards', c.id), { status: c.status === 'frozen' ? 'active' : 'frozen' }); } catch (e) { if ($('er')) $('er').textContent = 'មានបញ្ហា សូមសាកល្បងម្តងទៀត'; } },
+      del: async (c) => { try { revealed.delete(c.id); flipped.delete(c.id); await fs.deleteDoc(fs.doc(db, 'bank_cards', c.id)); } catch (e) { if ($('er')) $('er').textContent = 'មានបញ្ហា សូមសាកល្បងម្តងទៀត'; } }
+    };
+    function viewLogin() {
+      setView('<div class="f"><label for="li">លេខប្រព័ន្ធ</label><input id="li" inputmode="numeric" maxlength="8" placeholder="លេខប្រព័ន្ធ ៨ ខ្ទង់" autocomplete="username"></div>' +
+        '<div class="f"><label for="lp">ពាក្យសម្ងាត់</label><input id="lp" type="password" placeholder="ពាក្យសម្ងាត់" autocomplete="current-password"></div>' +
+        '<p class="err" id="le"></p><button class="btn" id="lb" type="button">ចូល</button>' +
+        '<p class="sub">មិនទាន់មានគណនី? <a href="index.html#register">ចុះឈ្មោះ</a></p>');
+      digits($('li'));
+      const go = async () => {
+        const id = $('li').value, pw = $('lp').value;
+        if (!/^\d{8}$/.test(id) || !pw) { $('le').textContent = 'សូមបញ្ចូលលេខប្រព័ន្ធ ៨ ខ្ទង់ និងពាក្យសម្ងាត់'; return; }
+        $('lb').disabled = true; $('le').textContent = '';
+        try { await authM.signInWithEmailAndPassword(auth, id + '@mnk-bank.local', pw); }
+        catch (e) { $('le').textContent = 'លេខប្រព័ន្ធ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ'; if ($('lb')) $('lb').disabled = false; }
+      };
+      $('lb').onclick = go;
+      $('lp').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+    }
+
+    rerender = () => viewList(true);
+    function viewList(keep) {
+      mode = 'list';
+      if (!(keep && $('cl'))) {
+        setView('<div class="head"><div><b>បណ្ណរបស់ខ្ញុំ</b><small id="cn"></small></div><button type="button" class="mini" id="nw">' + IC.plus + 'បង្កើតបណ្ណថ្មី</button></div><div id="cl"></div><p class="err" id="er"></p>' +
+          '<a class="back" href="index.html#dashboard">' + IC.back + 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង</a>');
+        $('nw').onclick = viewNew;
+      }
+      const box = $('cl'); box.textContent = '';
+      $('cn').textContent = loaded ? cards.length + '/3' : '';
+      $('nw').disabled = !loaded || cards.length >= 3;
+      if (cerr) { const p = document.createElement('p'); p.className = 'err'; p.textContent = 'គ្មានសិទ្ធិអានបណ្ណ សូមពិនិត្យ Firestore rules'; box.appendChild(p); return; }
+      if (!loaded) { const p = document.createElement('div'); p.className = 'empty'; p.textContent = 'កំពុងផ្ទុក...'; box.appendChild(p); return; }
+      if (!cards.length) { const e = document.createElement('div'); e.className = 'empty'; e.innerHTML = IC.card + '<br>អ្នកមិនទាន់មានបណ្ណទេ<br>ចុច «បង្កើតបណ្ណថ្មី» ដើម្បីចាប់ផ្តើម'; box.appendChild(e); return; }
+      cards.forEach((c, i) => { const el = cardEl(c, true, ops); el.style.setProperty('--d', (i * 0.08) + 's'); box.appendChild(el); });
+      made = '';
+    }
+
+    function viewNew() {
+      mode = 'new';
+      const used = new Set(cards.map((c) => c.slot)), slot = ['1', '2', '3'].find((s) => !used.has(s));
+      setView('<div id="pv"></div><div class="f"><label for="nm">ឈ្មោះលើបណ្ណ (អក្សរឡាតាំង)</label><input id="nm" maxlength="26" placeholder="SOKHA CHAN" autocomplete="off"></div>' +
+        '<div class="f"><label for="cu">រូបិយប័ណ្ណ</label><select id="cu"><option value="KHR">រៀល (\u17DB)</option><option value="USD">ដុល្លារ ($)</option></select></div>' +
+        '<p class="err" id="er"></p><div class="acts"><button class="btn ghost" id="bk" type="button">ត្រឡប់ក្រោយ</button><button class="btn" id="mk" type="button">បង្កើតបណ្ណ</button></div>');
+      const nm = $('nm'), cu = $('cu'), er = $('er');
+      const u = profile && profile.username ? profile.username.toUpperCase().replace(/[._-]+/g, ' ').replace(/[^A-Z ]/g, '').trim() : '';
+      nm.value = u;
+      const pv = () => { $('pv').textContent = ''; $('pv').appendChild(cardEl({ id: 'pv', holder: nm.value.trim(), currency: cu.value }, false)); };
+      nm.addEventListener('input', () => { nm.value = nm.value.toUpperCase().replace(/[^A-Z ]/g, '').replace(/ {2,}/g, ' '); er.textContent = ''; pv(); });
+      cu.onchange = pv; pv();
+      $('bk').onclick = () => viewList();
+      $('mk').onclick = async () => {
+        const holder = nm.value.trim();
+        if (!slot) { er.textContent = 'អ្នកមានបណ្ណគ្រប់ ៣ ហើយ សូមបិទបណ្ណមួយសិន'; return; }
+        if (!/^[A-Z][A-Z ]{2,25}$/.test(holder)) { er.textContent = 'ឈ្មោះលើបណ្ណត្រូវជាអក្សរឡាតាំង ៣ ដល់ ២៦ តួអក្សរ'; return; }
+        const r = crypto.getRandomValues(new Uint32Array(4));
+        let n = '4304' + String(r[0] % 1000000).padStart(6, '0') + String(r[1] % 100000).padStart(5, '0'), s = 0;
+        for (let i = 0; i < n.length; i++) { let x = +n[n.length - 1 - i]; if (i % 2 === 0) { x *= 2; if (x > 9) x -= 9; } s += x; }
+        n += (10 - s % 10) % 10;
+        const d = new Date(); d.setFullYear(d.getFullYear() + 5);
+        const uid = auth.currentUser.uid, id = uid + '_' + slot;
+        $('mk').disabled = true; $('bk').disabled = true; $('mk').textContent = 'កំពុងបង្កើត...'; er.textContent = '';
+        try {
+          await fs.setDoc(fs.doc(db, 'bank_cards', id), { uid: uid, slot: slot, number: n, holder: holder, exp: String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getFullYear()).slice(-2), cvv: String(r[2] % 1000).padStart(3, '0'), currency: cu.value, status: 'active', createdAt: fs.serverTimestamp() });
+          made = id; revealed.add(id); viewList();
+        } catch (e) {
+          $('mk').disabled = false; $('bk').disabled = false; $('mk').textContent = 'បង្កើតបណ្ណ';
+          er.textContent = e && e.code === 'permission-denied' ? 'គ្មានសិទ្ធិអនុវត្ត សូមពិនិត្យ Firestore rules' : 'មានបញ្ហា សូមសាកល្បងម្តងទៀត';
+        }
+      };
+    }
+
+    authM.onAuthStateChanged(auth, async (u) => {
+      if (unsubC) { unsubC(); unsubC = null; }
+      cards = []; profile = null; loaded = false; cerr = false;
+      if (!u) viewLogin();
+      else {
+        try { const s = await fs.getDoc(fs.doc(db, 'bank_users', u.uid)); if (s.exists()) profile = s.data(); } catch (e) {}
+        unsubC = fs.onSnapshot(fs.query(fs.collection(db, 'bank_cards'), fs.where('uid', '==', u.uid)), (s) => {
+          cards = s.docs.map((d) => Object.assign({ id: d.id }, d.data())).sort((a, b) => String(a.slot).localeCompare(String(b.slot)));
+          loaded = true; cerr = false; if (mode === 'list') viewList(true);
+        }, (e) => { console.error(e); cerr = true; loaded = true; if (mode === 'list') viewList(true); });
+        mode === 'new' ? viewNew() : viewList();
+      }
+      window.dispatchEvent(new Event('bank-auth'));
+    });
+  } catch (e) {
+    console.error(e);
+    setView('<p class="err">មិនអាចតភ្ជាប់ប្រព័ន្ធបានទេ សូមពិនិត្យអ៊ីនធឺណិត</p>');
+    window.dispatchEvent(new Event('bank-auth'));
+  }
+</script>
+</body>
+</html>

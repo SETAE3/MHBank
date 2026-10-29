@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ទូទាត់វិក្កយបត្រ | ធនាគារ មហានគរ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="bank-page.css">
+</head>
+<body>
+<script src="splash.js"></script>
+
+<div class="pg">
+  <div class="pg-img"><img src="ABCIMG.png" alt=""></div>
+  <div class="pg-side">
+    <a class="brand rise" href="index.html#dashboard"><img src="LOGOIMGA.png" alt=""><span><b>ធនាគារ មហានគរ</b><i>Mohanokor Bank of Cambodia Co., Ltd.</i></span></a>
+    <h1 class="ttl rise" style="--d:.15s">ទូទាត់វិក្កយបត្រ</h1>
+    <div class="card rise" style="--d:.3s" id="card"></div>
+    <div class="certs rise" style="--d:.5s">
+      <img class="a" src="ONEIMG.png" alt="PCI DSS Compliant"><img class="b" src="TWOIMG.png" alt=""><img class="c" src="THREEIMG.png" alt="">
+    </div>
+  </div>
+</div>
+<script>setTimeout(function () { document.body.classList.add('go'); }, 6500);</script>
+
+<script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyC821EXMqnw-J7c0XV06X860gqSEhBgp00",
+    authDomain: "moit-de6db.firebaseapp.com",
+    projectId: "moit-de6db",
+    storageBucket: "moit-de6db.firebasestorage.app",
+    messagingSenderId: "734578370872",
+    appId: "1:734578370872:web:806dc4ee7437b38909f9cd"
+  };
+  const CDN = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const $ = (id) => document.getElementById(id);
+  const card = $('card');
+  const NF = new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  const money = (n, c) => NF.format(Number(n) || 0) + (c === 'USD' ? ' $' : ' \u17DB');
+  const mmss = (t) => { t = Math.max(0, t); return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
+  const digits = (el) => el.addEventListener('input', () => { el.value = el.value.replace(/\D/g, ''); });
+
+  const SV = (d) => '<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+  const IC = { ok: SV('<circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/>'), no: SV('<circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/>'), back: SV('<path d="m15 18-6-6 6-6"/>') };
+  function hint(el, k, t) { el.className = 'hint' + (k ? ' ' + k : ''); el.innerHTML = k ? IC[k] : ''; el.appendChild(document.createTextNode(t)); }
+  let user = null, profile = null, acct = null, inv = null, timer = null, unsubAcct = null;
+
+  function setView(html) {
+    clearInterval(timer);
+    card.innerHTML = html;
+    card.classList.remove('swap'); void card.offsetWidth; card.classList.add('swap');
+  }
+  const fullName = () => profile ? ((profile.familyName || '') + ' ' + (profile.givenName || '')).trim() : '';
+
+  try {
+    const [appM, authM, fs] = await Promise.all([import(CDN + 'firebase-app.js'), import(CDN + 'firebase-auth.js'), import(CDN + 'firebase-firestore.js')]);
+    const app = appM.initializeApp(firebaseConfig, 'bank');   // same app name as the main site, so the login is shared
+    const auth = authM.getAuth(app), db = fs.getFirestore(app);
+
+    const paintMe = () => {
+      if (!$('mn')) return;
+      $('mn').textContent = acct && acct.accountNumber ? acct.accountNumber.replace(/^(\d)(\d{5})(\d{5})$/, '$1 $2 $3') : '-';
+      $('mb').textContent = money(acct && acct.balanceKHR, 'KHR') + '  |  ' + money(acct && acct.balanceUSD, 'USD');
+    };
+    const bal = (c) => Number(acct && (c === 'USD' ? acct.balanceUSD : acct.balanceKHR)) || 0;
+    const left = () => { const t = inv && inv.createdAt && inv.createdAt.toMillis ? inv.createdAt.toMillis() : 0; return t ? Math.ceil((t + 180000 - Date.now()) / 1000) : 0; };
+
+    async function payInvoice(ref, toAcct) {
+      const iref = fs.doc(db, 'payInvoices', ref), me = auth.currentUser;
+      const s = await fs.getDoc(iref);
+      if (!s.exists()) throw { code: 'app/no-invoice' };
+      const v = s.data();
+      if (v.status !== 'pending' || (v.createdAt && Date.now() > v.createdAt.toMillis() + 180000)) throw { code: 'app/expired' };
+      if (v.toAcct !== toAcct) throw { code: 'app/wrong-acct' };
+      if (v.toUid === me.uid) throw { code: 'app/self' };
+      const f = v.currency === 'USD' ? 'balanceUSD' : 'balanceKHR', note = 'ថ្លៃសេវា ' + v.label + ' (' + ref + ')';
+      const b = fs.writeBatch(db);
+      b.update(fs.doc(db, 'bank_accounts', me.uid), { [f]: fs.increment(-v.amount) });
+      b.update(fs.doc(db, 'bank_accounts', v.toUid), { [f]: fs.increment(v.amount) });
+      b.set(fs.doc(db, 'bank_tx', 'inv_' + ref), { uid: v.toUid, fromUid: me.uid, type: 'credit', amount: v.amount, currency: v.currency, note: 'ទទួលពី ' + fullName() + ' - ' + note, createdAt: fs.serverTimestamp() });
+      b.set(fs.doc(fs.collection(db, 'bank_tx')), { uid: me.uid, type: 'debit', amount: v.amount, currency: v.currency, note: note, createdAt: fs.serverTimestamp() });
+      b.update(iref, { status: 'paid', paidAt: fs.serverTimestamp(), payerName: fullName() });
+      await b.commit();
+      return v;
+    }
+
+    function viewLogin() {
+      setView('<div class="f"><label for="li">លេខប្រព័ន្ធ</label><input id="li" inputmode="numeric" maxlength="8" placeholder="លេខប្រព័ន្ធ ៨ ខ្ទង់" autocomplete="username"></div>' +
+        '<div class="f"><label for="lp">ពាក្យសម្ងាត់</label><input id="lp" type="password" placeholder="ពាក្យសម្ងាត់" autocomplete="current-password"></div>' +
+        '<p class="err" id="le"></p><button class="btn" id="lb" type="button">ចូល</button>' +
+        '<p class="sub">មិនទាន់មានគណនី? <a href="index.html#register">ចុះឈ្មោះ</a></p>');
+      digits($('li'));
+      const go = async () => {
+        const id = $('li').value, pw = $('lp').value;
+        if (!/^\d{8}$/.test(id) || !pw) { $('le').textContent = 'សូមបញ្ចូលលេខប្រព័ន្ធ ៨ ខ្ទង់ និងពាក្យសម្ងាត់'; return; }
+        $('lb').disabled = true; $('le').textContent = '';
+        try { await authM.signInWithEmailAndPassword(auth, id + '@mnk-bank.local', pw); }
+        catch (e) { $('le').textContent = 'លេខប្រព័ន្ធ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ'; if ($('lb')) $('lb').disabled = false; }
+      };
+      $('lb').onclick = go;
+      $('lp').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+    }
+
+    function viewForm() {
+      inv = null;
+      setView('<div class="me"><small>គណនីរបស់លោកអ្នក</small><b id="mn"></b><span id="mb"></span></div>' +
+        '<div class="f"><label for="rf">លេខយោងវិក្កយបត្រ (Ref)</label><input id="rf" inputmode="numeric" maxlength="8" placeholder="លេខយោង ៨ ខ្ទង់" autocomplete="off"><div class="hint" id="ri"></div></div>' +
+        '<div id="sm"></div>' +
+        '<div id="wa"><div class="f"><label for="ra">លេខគណនីអ្នកទទួល</label><input id="ra" inputmode="numeric" maxlength="11" placeholder="លេខគណនី ១១ ខ្ទង់" autocomplete="off"></div></div>' +
+        '<div id="wc" hidden><div class="f"><label for="cn">លេខបណ្ណ VISA</label><input id="cn" inputmode="numeric" maxlength="16" placeholder="លេខបណ្ណ ១៦ ខ្ទង់" autocomplete="off"></div>' +
+        '<div class="grid2"><div class="f"><label for="ce">ផុតកំណត់ (MM/YY)</label><input id="ce" inputmode="numeric" maxlength="5" placeholder="MM/YY" autocomplete="off"></div><div class="f"><label for="cv">CVV</label><input id="cv" type="password" inputmode="numeric" maxlength="3" placeholder="•••" autocomplete="off"></div></div></div>' +
+        '<p class="err" id="er"></p><button class="btn" id="go" type="button" disabled>ទូទាត់</button>' +
+        '<a class="back" href="index.html#dashboard">' + IC.back + 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង</a>');
+      paintMe();
+      const rf = $('rf'), ra = $('ra'), go = $('go'), info = $('ri'), sm = $('sm'), er = $('er');
+      digits(rf); digits(ra);
+      let tok = 0;
+      const row = (l, v) => { const d = document.createElement('div'); d.className = 'row'; const a = document.createElement('span'); a.textContent = l; const b = document.createElement('b'); b.textContent = v || '\u2014'; d.append(a, b); return d; };
+      const applyMethod = () => { const visa = !!inv && inv.method === 'visa'; $('wa').hidden = visa; $('wc').hidden = !visa; };
+      digits($('cn')); digits($('cv'));
+      $('ce').addEventListener('input', () => { let d = $('ce').value.replace(/\D/g, '').slice(0, 4); $('ce').value = d.length > 2 ? d.slice(0, 2) + '/' + d.slice(2) : d; });
+      async function checkCard() {
+        const num = $('cn').value, ex = $('ce').value.trim(), cv = $('cv').value;
+        if (!/^\d{16}$/.test(num) || !/^(0[1-9]|1[0-2])\/\d{2}$/.test(ex) || !/^\d{3}$/.test(cv)) return 'ព័ត៌មានបណ្ណមិនត្រឹមត្រូវ';
+        try {
+          const s = await fs.getDocs(fs.query(fs.collection(db, 'bank_cards'), fs.where('uid', '==', auth.currentUser.uid)));
+          const c = s.docs.map((d) => d.data()).find((x) => x.number === num);
+          if (!c || c.exp !== ex || c.cvv !== cv) return 'ព័ត៌មានបណ្ណមិនត្រឹមត្រូវ';
+          if (c.status !== 'active') return 'បណ្ណនេះត្រូវបានបង្កក';
+          if (c.currency !== inv.currency) return 'រូបិយប័ណ្ណនៃបណ្ណមិនត្រូវនឹងវិក្កយបត្រ';
+          return '';
+        } catch (e) { return 'មិនអាចផ្ទៀងផ្ទាត់បណ្ណបានទេ'; }
+      }
+      function paint() {
+        sm.textContent = ''; applyMethod();
+        if (!inv) return;
+        const box = document.createElement('div'); box.className = 'sum';
+        const am = document.createElement('div'); am.className = 'amt'; am.textContent = money(inv.amount, inv.currency);
+        const tm = document.createElement('div'); tm.className = 'tm'; tm.id = 'tt';
+        const bar = document.createElement('div'); bar.className = 'bar'; bar.innerHTML = '<i id="tb"></i>';
+        box.append(am, row('សេវា', inv.label), row('ទៅកាន់', inv.toName), row('វិធីទូទាត់', { khqr: 'ស្កេន KHQR', visa: 'បណ្ណ VISA' }[inv.method] || 'បង់តាមគណនី'), tm, bar);
+        sm.appendChild(box);
+      }
+      function tick() {
+        if (!$('rf')) return clearInterval(timer);
+        const l = left(), ok = !!inv && l > 0;
+        go.disabled = !ok;
+        const tt = $('tt'), tb = $('tb');
+        if (tt) { tt.textContent = l > 0 ? mmss(l) : 'អស់ពេលហើយ'; tt.classList.toggle('low', l <= 30); }
+        if (tb) tb.style.width = Math.max(0, l / 180 * 100) + '%';
+        if (inv && l <= 0) { hint(info, 'no', 'វិក្កយបត្រនេះអស់ពេល (៣ នាទី) សូមបង្កើតថ្មីពីគេហទំព័រក្រសួង'); }
+      }
+      async function look() {
+        er.textContent = ''; inv = null; paint(); go.disabled = true; info.className = 'hint';
+        const n = rf.value;
+        if (!/^\d{8}$/.test(n)) { info.textContent = ''; return; }
+        const my = ++tok; info.textContent = 'កំពុងស្វែងរក...';
+        try {
+          const s = await fs.getDoc(fs.doc(db, 'payInvoices', n));
+          if (my !== tok) return;
+          if (!s.exists()) { hint(info, 'no', 'រកមិនឃើញវិក្កយបត្រនេះទេ'); return; }
+          const v = s.data();
+          if (v.status !== 'pending') { hint(info, 'no', 'វិក្កយបត្រនេះបានទូទាត់រួចហើយ'); return; }
+          inv = v; hint(info, 'ok', 'រកឃើញវិក្កយបត្រ');
+          paint(); clearInterval(timer); timer = setInterval(tick, 1000); tick();
+        } catch (e) { if (my === tok) { hint(info, 'no', 'មានបញ្ហា សូមសាកល្បងម្តងទៀត'); } }
+      }
+      rf.addEventListener('input', look);
+      ra.addEventListener('input', () => { er.textContent = ''; });
+      go.onclick = async () => {
+        const visa = inv.method === 'visa', n = visa ? inv.toAcct : ra.value;
+        if (!/^\d{11}$/.test(n)) { er.textContent = 'លេខគណនីត្រូវមាន ១១ ខ្ទង់'; return; }
+        if (n !== inv.toAcct) { er.textContent = 'លេខគណនីអ្នកទទួលមិនត្រឹមត្រូវ'; return; }
+        if (left() <= 0) { er.textContent = 'វិក្កយបត្រនេះអស់ពេលហើយ'; return; }
+        if (visa) { const ce = await checkCard(); if (ce) { er.textContent = ce; return; } }
+        if (inv.amount > bal(inv.currency)) { er.textContent = 'សមតុល្យមិនគ្រប់គ្រាន់'; return; }
+        go.disabled = true; go.textContent = 'កំពុងដំណើរការ...'; er.textContent = '';
+        try { const v = await payInvoice(rf.value, n); viewDone(v, rf.value); }
+        catch (e) {
+          go.textContent = 'ទូទាត់'; go.disabled = false; const c = e && e.code;
+          er.textContent = c === 'app/expired' || c === 'permission-denied' ? 'វិក្កយបត្រអស់ពេល ឬបានទូទាត់រួចហើយ' : c === 'app/wrong-acct' ? 'លេខគណនីអ្នកទទួលមិនត្រឹមត្រូវ' : c === 'app/self' ? 'មិនអាចទូទាត់ទៅគណនីខ្លួនឯងបានទេ' : 'មានបញ្ហា សូមសាកល្បងម្តងទៀត';
+        }
+      };
+      const q = new URLSearchParams(location.search).get('ref');
+      const qa = new URLSearchParams(location.search).get('acct');
+      if (qa && /^\d{11}$/.test(qa)) ra.value = qa;
+      if (q && /^\d{8}$/.test(q)) { rf.value = q; look(); }
+    }
+
+    function viewDone(v, ref) {
+      setView('<div class="done"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>' +
+        '<h3>ការទូទាត់បានជោគជ័យ</h3><div class="amt" id="da"></div><p id="dp"></p><p>សូមត្រឡប់ទៅគេហទំព័រក្រសួង ការដាក់ស្នើនឹងបន្តដោយស្វ័យប្រវត្តិ។</p></div>' +
+        '<a class="btn" href="index.html#dashboard">ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង</a><button class="btn ghost" id="again" type="button">ទូទាត់វិក្កយបត្រផ្សេងទៀត</button>');
+      $('da').textContent = money(v.amount, v.currency);
+      $('dp').textContent = v.label + ' · លេខយោង ' + ref;
+      $('again').onclick = viewForm;
+    }
+
+    authM.onAuthStateChanged(auth, async (u) => {
+      if (unsubAcct) { unsubAcct(); unsubAcct = null; }
+      user = u; acct = null; profile = null;
+      if (!u) viewLogin();
+      else {
+        try { const s = await fs.getDoc(fs.doc(db, 'bank_users', u.uid)); if (s.exists()) profile = s.data(); } catch (e) {}
+        unsubAcct = fs.onSnapshot(fs.doc(db, 'bank_accounts', u.uid), (s) => { acct = s.exists() ? s.data() : null; paintMe(); });
+        viewForm();
+      }
+      window.dispatchEvent(new Event('bank-auth'));
+    });
+  } catch (e) {
+    console.error(e);
+    setView('<p class="err">មិនអាចតភ្ជាប់ប្រព័ន្ធបានទេ សូមពិនិត្យអ៊ីនធឺណិត</p>');
+    window.dispatchEvent(new Event('bank-auth'));
+  }
+</script>
+</body>
+</html>

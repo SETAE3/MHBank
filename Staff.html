@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>បុគ្គលិក | ធនាគារ មហានគរ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="bank-page.css">
+</head>
+<body>
+<script src="splash.js"></script>
+<div class="pg">
+  <div class="pg-img"><img src="COMPIMG.png" alt=""></div>
+  <div class="pg-side">
+    <a class="brand rise" href="index.html"><img src="LOGOIMGA.png" alt=""><span><b>ធនាគារ មហានគរ</b><i>Mohanokor Bank of Cambodia Co., Ltd.</i></span></a>
+    <h1 class="ttl rise" style="--d:.15s">ប្រព័ន្ធបុគ្គលិក</h1>
+    <div class="card rise" style="--d:.3s" id="card"></div>
+    <div class="certs rise" style="--d:.5s"><img class="a" src="ONEIMG.png" alt="PCI DSS Compliant"></div>
+  </div>
+</div>
+
+<script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyC821EXMqnw-J7c0XV06X860gqSEhBgp00",
+    authDomain: "moit-de6db.firebaseapp.com",
+    projectId: "moit-de6db",
+    storageBucket: "moit-de6db.firebasestorage.app",
+    messagingSenderId: "734578370872",
+    appId: "1:734578370872:web:806dc4ee7437b38909f9cd"
+  };
+  const CDN = 'https://www.gstatic.com/firebasejs/10.12.2/', DOM = '@mnk-bank.local';
+  const $ = (id) => document.getElementById(id);
+  const card = $('card');
+  const NF = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+  const money = (n, c) => NF.format(Number(n) || 0) + (c === 'USD' ? ' $' : ' \u17DB');
+  const digits = (el) => el.addEventListener('input', () => { el.value = el.value.replace(/\D/g, ''); });
+  const email = (id) => 'staff' + id + DOM;
+  function setView(h) { card.innerHTML = h; card.classList.remove('swap'); void card.offsetWidth; card.classList.add('swap'); }
+  function msg(el, t, ok) { el.textContent = t; el.style.color = ok ? 'var(--green)' : ''; }
+  let staff = null, cust = null;
+
+  try {
+    const [appM, authM, fs] = await Promise.all([import(CDN + 'firebase-app.js'), import(CDN + 'firebase-auth.js'), import(CDN + 'firebase-firestore.js')]);
+    const app = appM.initializeApp(firebaseConfig, 'bank');
+    const auth = authM.getAuth(app), db = fs.getFirestore(app);
+
+    function viewLogin(err) {
+      setView('<div class="f"><label for="si">លេខបុគ្គលិក</label><input id="si" inputmode="numeric" maxlength="6" placeholder="លេខបុគ្គលិក ៦ ខ្ទង់" autocomplete="username"></div>' +
+        '<div class="f"><label for="sp">ពាក្យសម្ងាត់</label><input id="sp" type="password" placeholder="ពាក្យសម្ងាត់" autocomplete="current-password"></div>' +
+        '<p class="err" id="le"></p><button class="btn" id="lb" type="button">ចូល</button>');
+      digits($('si')); if (err) $('le').textContent = err;
+      const go = async () => {
+        const id = $('si').value, pw = $('sp').value;
+        if (!/^\d{6}$/.test(id) || !pw) { $('le').textContent = 'សូមបញ្ចូលលេខបុគ្គលិក ៦ ខ្ទង់ និងពាក្យសម្ងាត់'; return; }
+        $('lb').disabled = true; $('le').textContent = '';
+        try { await authM.signInWithEmailAndPassword(auth, email(id), pw); }
+        catch (e) { $('le').textContent = 'លេខបុគ្គលិក ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ'; $('lb').disabled = false; }
+      };
+      $('lb').onclick = go; $('sp').addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+    }
+
+    function viewHome() {
+      cust = null;
+      setView('<div class="me"><small>' + (staff.role === 'admin' ? 'អ្នកគ្រប់គ្រង' : 'បុគ្គលិក') + '</small><b id="sn"></b></div>' +
+        '<div class="f"><label for="ca">លេខគណនីអតិថិជន</label><input id="ca" inputmode="numeric" maxlength="11" placeholder="លេខគណនី ១១ ខ្ទង់" autocomplete="off"><div class="hint" id="ch"></div></div>' +
+        '<div id="ct"></div>' +
+        (staff.role === 'admin' ? '<button class="btn ghost" id="ns" type="button">បង្កើតគណនីបុគ្គលិក</button>' : '') +
+        '<button class="btn ghost" id="lo" type="button">ចាកចេញ</button>');
+      $('sn').textContent = staff.name + ' (' + staff.id + ')';
+      digits($('ca')); $('lo').onclick = () => authM.signOut(auth);
+      if ($('ns')) $('ns').onclick = viewNew;
+      let tok = 0;
+      $('ca').addEventListener('input', async () => {
+        const n = $('ca').value, h = $('ch'); cust = null; $('ct').innerHTML = ''; h.className = 'hint'; h.textContent = '';
+        if (!/^\d{11}$/.test(n)) return;
+        const my = ++tok; h.textContent = 'កំពុងស្វែងរក...';
+        try {
+          const l = await fs.getDoc(fs.doc(db, 'bank_lookup', n)); if (my !== tok) return;
+          if (!l.exists()) { h.className = 'hint no'; h.textContent = 'រកមិនឃើញគណនីនេះទេ'; return; }
+          const a = await fs.getDoc(fs.doc(db, 'bank_accounts', l.data().uid)); if (my !== tok) return;
+          cust = { uid: l.data().uid, name: l.data().name, n: n, a: a.data() || {} };
+          h.className = 'hint ok'; h.textContent = cust.name; paintCust();
+        } catch (e) { if (my === tok) { h.className = 'hint no'; h.textContent = 'មានបញ្ហា ឬគ្មានសិទ្ធិ'; } }
+      });
+    }
+
+    function paintCust() {
+      $('ct').innerHTML = '<div class="me" style="margin-top:16px"><small>សមតុល្យអតិថិជន</small><span id="cb"></span></div>' +
+        '<div class="grid2"><div class="f"><label for="ac">ប្រតិបត្តិការ</label><select id="ac"><option value="in">ដាក់ប្រាក់</option><option value="out">ដកប្រាក់</option></select></div>' +
+        '<div class="f"><label for="cc">រូបិយប័ណ្ណ</label><select id="cc"><option value="KHR">រៀល</option><option value="USD">ដុល្លារ</option></select></div></div>' +
+        '<div class="f"><label for="ma">ចំនួនទឹកប្រាក់</label><input id="ma" inputmode="decimal" placeholder="0" autocomplete="off"></div>' +
+        '<p class="err" id="er"></p><button class="btn" id="ex" type="button">អនុវត្ត</button>';
+      const bal = () => 'KHR ' + money(cust.a.balanceKHR, 'KHR') + '  |  USD ' + money(cust.a.balanceUSD, 'USD');
+      $('cb').textContent = bal();
+      $('ex').onclick = async () => {
+        const c = $('cc').value, out = $('ac').value === 'out', s = $('ma').value.replace(/,/g, '').trim(), er = $('er');
+        if (!(c === 'USD' ? /^\d+(\.\d{1,2})?$/ : /^\d+$/).test(s) || !(parseFloat(s) > 0)) { msg(er, 'ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ'); return; }
+        const amt = Math.round(parseFloat(s) * 100) / 100, f = c === 'USD' ? 'balanceUSD' : 'balanceKHR';
+        if (out && amt > (Number(cust.a[f]) || 0)) { msg(er, 'សមតុល្យមិនគ្រប់គ្រាន់'); return; }
+        $('ex').disabled = true; msg(er, '');
+        try {
+          const b = fs.writeBatch(db);
+          b.update(fs.doc(db, 'bank_accounts', cust.uid), { [f]: fs.increment(out ? -amt : amt) });
+          b.set(fs.doc(fs.collection(db, 'bank_tx')), { uid: cust.uid, type: out ? 'debit' : 'credit', amount: amt, currency: c, note: (out ? 'ដកប្រាក់ដោយបុគ្គលិក ' : 'ដាក់ប្រាក់ដោយបុគ្គលិក ') + staff.id, staffUid: auth.currentUser.uid, createdAt: fs.serverTimestamp() });
+          await b.commit();
+          cust.a[f] = (Number(cust.a[f]) || 0) + (out ? -amt : amt);
+          $('cb').textContent = bal(); $('ma').value = ''; msg(er, 'ប្រតិបត្តិការបានជោគជ័យ', true);
+        } catch (e) { msg(er, 'មានបញ្ហា ឬគ្មានសិទ្ធិ'); }
+        $('ex').disabled = false;
+      };
+    }
+
+    function viewNew() {
+      setView('<div class="grid2"><div class="f"><label for="nf">គោត្តនាម</label><input id="nf"></div><div class="f"><label for="ng">នាម</label><input id="ng"></div></div>' +
+        '<div class="f"><label for="nr">តួនាទី</label><select id="nr"><option value="staff">បុគ្គលិក</option><option value="admin">អ្នកគ្រប់គ្រង</option></select></div>' +
+        '<div class="f"><label for="np">ពាក្យសម្ងាត់ (យ៉ាងតិច ៨ តួ)</label><input id="np" type="password" autocomplete="new-password"></div>' +
+        '<p class="err" id="er"></p><button class="btn" id="mk" type="button">បង្កើតគណនី</button>' +
+        '<button class="btn ghost" id="bk" type="button">ត្រឡប់ក្រោយ</button>');
+      $('bk').onclick = viewHome;
+      $('mk').onclick = async () => {
+        const fam = $('nf').value.trim(), giv = $('ng').value.trim(), pw = $('np').value, er = $('er');
+        if (!fam || !giv || pw.length < 8) { msg(er, 'សូមបំពេញព័ត៌មានឲ្យគ្រប់ (ពាក្យសម្ងាត់ ៨ តួឡើង)'); return; }
+        $('mk').disabled = true; msg(er, '');
+        // second app instance, so the admin stays signed in on the main one
+        const app2 = appM.initializeApp(firebaseConfig, 'staffmk' + Date.now()), auth2 = authM.getAuth(app2);
+        try {
+          let cred = null, id = '';
+          for (let i = 0; i < 8 && !cred; i++) {
+            id = String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000));
+            try { cred = await authM.createUserWithEmailAndPassword(auth2, email(id), pw); }
+            catch (e) { if (e.code !== 'auth/email-already-in-use') throw e; }
+          }
+          if (!cred) throw new Error('id');
+          try {
+            await fs.setDoc(fs.doc(db, 'staff_users', cred.user.uid), { staffId: id, familyName: fam, givenName: giv, role: $('nr').value, createdAt: fs.serverTimestamp(), createdBy: auth.currentUser.uid });
+          } catch (e) { try { await cred.user.delete(); } catch (_) {} throw e; }
+          await authM.signOut(auth2);
+          setView('<div class="done"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg><h3>បង្កើតគណនីបុគ្គលិកជោគជ័យ</h3><p>លេខបុគ្គលិក៖</p><div class="amt" id="nid"></div></div><button class="btn" id="bk" type="button">ត្រឡប់ក្រោយ</button>');
+          $('nid').textContent = id; $('bk').onclick = viewHome;
+        } catch (e) { msg(er, 'មានបញ្ហា ឬគ្មានសិទ្ធិ'); $('mk').disabled = false; }
+      };
+    }
+
+    authM.onAuthStateChanged(auth, async (u) => {
+      staff = null;
+      if (!u) viewLogin();
+      else {
+        try {
+          const s = await fs.getDoc(fs.doc(db, 'staff_users', u.uid));
+          if (!s.exists()) { await authM.signOut(auth); viewLogin('គណនីនេះមិនមែនជាបុគ្គលិកទេ'); }
+          else { const d = s.data(); staff = { id: d.staffId, role: d.role, name: ((d.familyName || '') + ' ' + (d.givenName || '')).trim() }; viewHome(); }
+        } catch (e) { await authM.signOut(auth); viewLogin('គ្មានសិទ្ធិចូល'); }
+      }
+      window.dispatchEvent(new Event('bank-auth'));
+    });
+  } catch (e) {
+    console.error(e);
+    setView('<p class="err">មិនអាចតភ្ជាប់ប្រព័ន្ធបានទេ</p>');
+    window.dispatchEvent(new Event('bank-auth'));
+  }
+</script>
+<script>setTimeout(function () { document.body.classList.add('go'); }, 6500);</script>
+</body>
+</html>

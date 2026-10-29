@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ធនាគារ មហានគរ | Mohanokor Bank of Cambodia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #033198;
+    --ink: #0B2FA0;
+    --soft: #E9EFFB;
+    --px: calc(100vw / 1600);
+    --header-h: calc(112 * var(--px));
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Kantumruy Pro', sans-serif;
+    background: #fff;
+    color: var(--ink);
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  main { flex: 1; }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--header-h);
+    background: var(--blue);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 calc(64 * var(--px));
+  }
+  .brand { display: flex; align-items: center; gap: calc(16 * var(--px)); }
+  .brand img { width: calc(64 * var(--px)); height: calc(64 * var(--px)); border-radius: 50%; display: block; flex: none; }
+  .brand-kh { font-weight: 500; font-size: calc(24 * var(--px)); line-height: calc(34 * var(--px)); white-space: nowrap; }
+  .brand-en { font-weight: 300; font-size: calc(16 * var(--px)); line-height: calc(24 * var(--px)); white-space: nowrap; }
+  .divider { margin-left: auto; width: 2px; height: calc(52 * var(--px)); background: rgba(255, 255, 255, 0.85); }
+  nav { display: flex; align-items: center; gap: calc(52 * var(--px)); margin-left: calc(52 * var(--px)); }
+  nav a, nav .ph {
+    font-weight: 500;
+    font-size: calc(19 * var(--px));
+    line-height: 1.6;
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+    padding-bottom: calc(6 * var(--px));
+    border-bottom: 2px solid transparent;
+    cursor: default;
+  }
+  nav a { cursor: pointer; transition: border-color 0.3s ease; }
+  nav a.active { border-bottom-color: #fff; }
+  nav a:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+  nav .ph { user-select: none; }
+
+  /* Views */
+  .view { display: none; opacity: 0; transition: opacity 0.35s ease; }
+  .view.show { display: block; }
+  .view.visible { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .view, nav a { transition: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* Hero */
+  .hero {
+    display: flex;
+    gap: calc(60 * var(--px));
+    padding: calc(64 * var(--px)) calc(72 * var(--px)) 0;
+  }
+  .hero-photo {
+    width: calc(600 * var(--px));
+    height: calc(400 * var(--px));
+    flex: none;
+    display: block;
+    object-fit: cover;
+    border: 3px solid #1236A8;
+    background: #E9EDF8;
+  }
+  .hero-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(400 * var(--px));
+    color: var(--ink);
+  }
+  .hero-text h2 { font-weight: 600; font-size: calc(20 * var(--px)); line-height: 1.5; }
+  .hero-text blockquote {
+    margin-top: calc(26 * var(--px));
+    font-size: calc(17 * var(--px));
+    line-height: calc(34 * var(--px));
+    text-align: justify;
+  }
+  .hero-text .by { margin-top: auto; font-size: calc(17 * var(--px)); line-height: 1.5; }
+  .hero-text .by b { font-weight: 600; }
+
+  /* Partners */
+  .partners {
+    width: calc(1400 * var(--px));
+    max-width: 100%;
+    margin: 0 auto;
+    background: var(--blue);
+    border-radius: calc(26 * var(--px));
+    padding: calc(28 * var(--px)) calc(64 * var(--px)) calc(34 * var(--px));
+  }
+  .partners h2 { color: #fff; font-weight: 500; font-size: calc(20 * var(--px)); line-height: calc(28 * var(--px)); text-align: center; }
+  .pgrid {
+    display: grid;
+    grid-template-columns: repeat(15, minmax(0, 1fr));
+    gap: calc(18 * var(--px)) calc(20 * var(--px));
+    margin-top: calc(26 * var(--px));
+  }
+  .pgrid i { display: block; height: calc(40 * var(--px)); background: #fff; border-radius: calc(8 * var(--px)); }
+  .partners.domestic { margin-top: calc(80 * var(--px)); }
+  .end { margin-top: calc(56 * var(--px)); padding-bottom: calc(96 * var(--px)); }
+
+  /* About */
+  .about { padding: calc(56 * var(--px)) calc(24 * var(--px)) calc(96 * var(--px)); }
+  .about-box {
+    width: calc(1040 * var(--px));
+    max-width: 100%;
+    margin: 0 auto;
+    background: var(--soft);
+    border-radius: calc(22 * var(--px));
+    padding: calc(52 * var(--px)) calc(64 * var(--px)) calc(56 * var(--px));
+    color: #17285C;
+    box-shadow: 0 calc(6 * var(--px)) calc(24 * var(--px)) rgba(3, 49, 152, 0.10);
+  }
+  .about-box h2 { font-weight: 600; font-size: calc(28 * var(--px)); line-height: 1.5; color: var(--blue); }
+  .about-box h2::after {
+    content: '';
+    display: block;
+    width: calc(64 * var(--px));
+    height: 3px;
+    border-radius: 2px;
+    background: var(--blue);
+    margin-top: calc(12 * var(--px));
+  }
+  .about-box p {
+    font-size: calc(17 * var(--px));
+    line-height: calc(33 * var(--px));
+    text-align: justify;
+    text-indent: calc(36 * var(--px));
+    margin-top: calc(26 * var(--px));
+  }
+
+  /* Footer */
+  footer { background: var(--blue); color: #fff; }
+  .ft-top { padding: calc(56 * var(--px)) calc(24 * var(--px)) calc(60 * var(--px)); }
+  .ft-brand {
+    width: calc(1040 * var(--px));
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: calc(28 * var(--px));
+  }
+  .ft-brand img { width: calc(76 * var(--px)); height: calc(76 * var(--px)); border-radius: 50%; display: block; flex: none; }
+  .ft-name b { display: block; font-weight: 500; font-size: calc(21 * var(--px)); line-height: 1.5; }
+  .ft-name span { display: block; font-weight: 300; font-size: calc(15 * var(--px)); line-height: 1.6; }
+  .ft-btns { margin-left: auto; display: flex; gap: calc(16 * var(--px)); }
+  .ft-btns button {
+    min-width: calc(128 * var(--px));
+    height: calc(38 * var(--px));
+    padding: 0 calc(14 * var(--px));
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 3px;
+    font-family: 'Kantumruy Pro', sans-serif;
+    font-weight: 300;
+    font-size: calc(15 * var(--px));
+    cursor: default;
+  }
+  .ft-cert {
+    width: calc(1040 * var(--px));
+    max-width: 100%;
+    margin: calc(48 * var(--px)) auto 0;
+    padding-top: calc(44 * var(--px));
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+  }
+  .ft-title { font-weight: 400; font-size: calc(18 * var(--px)); line-height: 1.6; }
+  .ft-logos { display: flex; justify-content: center; gap: calc(28 * var(--px)); margin-top: calc(24 * var(--px)); }
+  .ft-logos .tile {
+    width: calc(144 * var(--px));
+    height: calc(96 * var(--px));
+    background: #fff;
+    border-radius: calc(12 * var(--px));
+    padding: calc(8 * var(--px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ft-logos img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; }
+  .ft-copy {
+    background: var(--soft);
+    color: var(--blue);
+    text-align: center;
+    font-weight: 300;
+    font-size: calc(16 * var(--px));
+    line-height: 1.6;
+    padding: calc(22 * var(--px)) calc(16 * var(--px));
+  }
+
+
+  /* ---- Auth pages (login / register) ---- */
+  body.auth-mode header, body.auth-mode footer { display: none; }
+  .view.auth.show { display: flex; min-height: 100vh; }
+  .auth-img { width: 58%; flex: none; position: sticky; top: 0; height: 100vh; background: #0D2A6E; }
+  .auth-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .auth-side {
+    flex: 1;
+    min-width: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 44px 48px 36px;
+    background: #fff;
+    color: #1B2A55;
+  }
+  .lg-brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--blue); }
+  .lg-brand img { width: 56px; height: 56px; border-radius: 50%; display: block; flex: none; }
+  .lg-brand b { display: block; font-weight: 600; font-size: 22px; line-height: 1.4; }
+  .lg-brand i { display: block; font-style: normal; font-weight: 400; font-size: 14px; line-height: 1.4; }
+  .lg-title { font-weight: 600; font-size: 26px; line-height: 1.5; color: var(--blue); margin-top: 40px; text-align: center; }
+  .lg-card { width: 100%; max-width: 440px; margin-top: 28px; background: #F8FAFE; border: 1px solid #E3EAF8; border-radius: 18px; padding: 12px 12px 26px; }
+  .lg-box { background: #EDF2FC; border-radius: 14px; padding: 30px 28px 30px; }
+  .lg-box label, .rg-card label.lab { display: block; font-size: 14.5px; font-weight: 500; line-height: 1.6; color: #1B2A55; margin-bottom: 8px; }
+  .lg-row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 20px; }
+  .lg-link { color: #1148C4; font-weight: 500; font-size: 14.5px; text-decoration: none; }
+  .lg-link:hover { text-decoration: underline; }
+  .lg-link:focus-visible, .rg-tabs button:focus-visible, .lg-btn:focus-visible, .eye:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  .auth input[type="text"], .auth input[type="password"], .auth input[type="email"], .auth input[type="tel"] {
+    width: 100%;
+    height: 46px;
+    border: 1px solid #CBD6EE;
+    border-radius: 10px;
+    background: #fff;
+    padding: 0 16px;
+    font-family: 'Kantumruy Pro', sans-serif;
+    font-size: 15px;
+    color: #1B2A55;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .auth input::placeholder { color: #9AA7C7; }
+  .auth input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(3, 49, 152, 0.15); }
+  .pw { position: relative; }
+  .pw input { padding-right: 48px; }
+  .eye { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border: 0; background: none; color: #5A6A96; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+  .eye:hover { color: var(--blue); }
+  .lg-btn { width: 100%; height: 46px; margin-top: 24px; border: 0; border-radius: 10px; background: var(--blue); color: #fff; font-family: 'Kantumruy Pro', sans-serif; font-size: 16px; font-weight: 500; cursor: pointer; transition: background 0.2s ease; }
+  .lg-btn:hover { background: #02276F; }
+  .lg-or { text-align: center; font-size: 14.5px; margin-top: 26px; }
+  .lg-div { height: 1px; background: #E0E7F6; margin: 22px 12px 0; }
+  .lg-new { text-align: center; font-size: 14.5px; line-height: 1.7; margin-top: 22px; padding: 0 12px; }
+  .auth-certs { margin-top: auto; padding-top: 48px; display: flex; align-items: center; justify-content: center; gap: 26px; flex-wrap: wrap; }
+  .auth-certs img { display: block; width: auto; }
+  .auth-certs .one { height: 64px; }
+  .auth-certs .two { height: 32px; }
+  .auth-certs .three { height: 46px; }
+
+  .rg-card { width: 100%; max-width: 600px; margin-top: 32px; background: #F8FAFE; border: 1px solid #E3EAF8; border-radius: 18px; padding: 30px 32px 32px; }
+  .rg-title { font-weight: 600; font-size: 21px; line-height: 1.5; color: var(--blue); }
+  .rg-sub { font-size: 14px; line-height: 1.7; color: #5A6A96; margin-top: 6px; padding-bottom: 20px; border-bottom: 1px solid #E0E7F6; }
+  .rg-tabs { display: flex; gap: 8px; margin-top: 20px; }
+  .rg-tabs button { flex: 1; height: 44px; border: 0; border-radius: 10px; background: #E3EAF8; color: #4A5A86; font-family: 'Kantumruy Pro', sans-serif; font-size: 14.5px; cursor: pointer; transition: background 0.25s ease, color 0.25s ease; }
+  .rg-tabs button.on { background: var(--blue); color: #fff; }
+  .rg-pane { display: none; margin-top: 22px; }
+  .rg-pane.show { display: block; }
+  .rg-note { background: #E3EBFB; color: #17285C; border-radius: 8px; padding: 11px 14px; font-size: 13.5px; font-weight: 500; line-height: 1.6; }
+  .rg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 18px; margin-top: 20px; }
+  .rg-grid .full { grid-column: 1 / -1; }
+  .rg-grid label.lab { font-size: 13.5px; margin-bottom: 6px; }
+  .rg-grid label.lab i { color: #C0392B; font-style: normal; margin-left: 3px; }
+  .rg-grid input[type="text"], .rg-grid input[type="password"], .rg-grid input[type="email"], .rg-grid input[type="tel"] { height: 42px; font-size: 14px; border-radius: 9px; }
+  .rg-check { display: flex; align-items: flex-start; gap: 12px; margin-top: 22px; font-size: 13px; line-height: 1.7; color: #3A4A78; cursor: pointer; }
+  .rg-check input { width: 17px; height: 17px; margin-top: 3px; flex: none; accent-color: var(--blue); }
+  .rg-foot { display: flex; justify-content: flex-end; margin-top: 24px; }
+  .rg-foot .lg-btn { width: auto; margin-top: 0; height: 42px; padding: 0 30px; font-size: 15px; }
+  .rg-rv { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; }
+  .rg-rv span { display: block; font-size: 12.5px; color: #5A6A96; }
+  .rg-rv b { display: block; font-weight: 500; font-size: 15px; word-break: break-word; margin-top: 2px; }
+  .rg-rv .full { grid-column: 1 / -1; }
+
+
+  /* ---- validation + registration done ---- */
+  .fe { display: none; color: #C0392B; font-size: 12.5px; line-height: 1.5; margin-top: 6px; }
+  .fe.show { display: block; }
+  .fld.bad input { border-color: #C0392B; }
+  .fld.bad input:focus { box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.15); }
+  .fe-g { display: none; color: #C0392B; font-size: 13.5px; line-height: 1.6; text-align: center; margin-top: 14px; }
+  .fe-g.show { display: block; }
+  .lg-btn:disabled { opacity: 0.65; cursor: default; }
+  .rg-check + .fe { margin-top: 8px; }
+  .rg-done { display: none; text-align: center; padding: 30px 10px 6px; color: #1B2A55; }
+  .rg-done.show { display: block; }
+  .rg-done svg { color: var(--blue); }
+  .rg-done h3 { font-weight: 600; font-size: 22px; color: var(--blue); margin-top: 8px; }
+  .rg-done p { font-size: 14.5px; line-height: 1.8; margin-top: 12px; color: #3A4A78; }
+  .rg-done .big { font-size: 38px; font-weight: 600; letter-spacing: 0.1em; color: var(--blue); margin-top: 2px; }
+  .rg-done .mid { font-size: 22px; font-weight: 500; letter-spacing: 0.06em; color: #1B2A55; margin-top: 2px; }
+  .rg-done a.lg-btn { display: flex; align-items: center; justify-content: center; text-decoration: none; margin-top: 26px; }
+
+  /* ---- dashboard ---- */
+  body.dash-mode { background: #F5F8FE; }
+  .db-bar { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 2px solid #1E34C8; }
+  .db-bar-in { max-width: 1240px; margin: 0 auto; padding: 14px 28px; display: flex; align-items: center; gap: 16px; }
+  .db-bar .lg-brand img { width: 48px; height: 48px; }
+  .db-bar .lg-brand b { font-size: 19px; }
+  .db-bar .lg-brand i { font-size: 13px; }
+  .db-title { margin-left: auto; font-weight: 600; font-size: 22px; color: #1E34C8; letter-spacing: .01em; }
+  .db-out { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border: 2px solid #1E34C8; background: #fff; color: #1E34C8; border-radius: 12px; font-family: 'Kantumruy Pro', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
+  .db-out:hover { background: #1E34C8; color: #fff; }
+  .db-main { max-width: 1240px; margin: 0 auto; padding: 32px 28px 80px; color: #17285C; }
+  .db-hello { display: flex; align-items: center; gap: 18px; }
+  .db-ava { width: 72px; height: 72px; flex: none; border-radius: 50%; background: linear-gradient(135deg, #5AB0F5, #1B6FD6); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(27, 111, 214, 0.28); }
+  .db-hello h1 { font-weight: 600; font-size: 26px; line-height: 1.4; color: var(--blue); }
+  .db-hello button { background: none; border: 0; padding: 0; margin-top: 2px; color: #1148C4; font-family: 'Kantumruy Pro', sans-serif; font-size: 14.5px; cursor: pointer; }
+  .db-hello button:hover { text-decoration: underline; }
+
+  /* balance card: the one bold element */
+  .db-bal { position: relative; overflow: hidden; margin-top: 28px; padding: 30px 40px; border-radius: 26px; border: 2px solid #1E34C8; background: linear-gradient(118deg, #0A2A9C 0%, #1E34C8 55%, #3A57E8 100%); color: #fff; display: flex; align-items: center; gap: 24px; box-shadow: 0 16px 36px rgba(3, 49, 152, 0.22); }
+  .db-bal::before, .db-bal::after { content: ''; position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.07); pointer-events: none; }
+  .db-bal::before { width: 280px; height: 280px; right: -70px; top: -120px; }
+  .db-bal::after { width: 200px; height: 200px; left: 120px; bottom: -130px; }
+  .db-wallet { position: relative; z-index: 1; width: 84px; height: 84px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.12); display: flex; align-items: center; justify-content: center; flex: none; }
+  .db-acct { position: relative; z-index: 1; margin-right: auto; margin-left: 2px; color: #fff; }
+  .db-acct small { display: block; font-size: 14px; opacity: .8; }
+  .db-acct b { display: block; font-size: 21px; font-weight: 500; letter-spacing: .12em; margin-top: 2px; }
+  .db-acct button { margin-top: 10px; height: 32px; padding: 0 14px; border: 1px solid rgba(255, 255, 255, 0.6); background: transparent; color: #fff; border-radius: 8px; font-family: inherit; font-size: 13px; cursor: pointer; }
+  .db-acct button:hover { background: rgba(255, 255, 255, 0.16); }
+  .db-eye { position: relative; z-index: 1; align-self: flex-start; flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.14); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .db-eye:hover { background: rgba(255, 255, 255, 0.26); }
+  .db-eye:focus-visible, .db-acct button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .db-amounts { position: relative; z-index: 1; text-align: right; }
+  .db-amounts .lab { font-size: 16px; opacity: 0.88; }
+  .db-amounts .amt { font-size: 32px; font-weight: 600; line-height: 1.35; letter-spacing: 0.01em; transition: filter .25s ease; }
+  .db-bal.masked .amt { filter: blur(9px); user-select: none; }
+
+  /* service cards: outlined like the mockup */
+  .db-sec { font-weight: 600; font-size: 20px; color: var(--blue); margin: 38px 0 14px; }
+  .db-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .db-tile { display: flex; flex-direction: row; align-items: center; gap: 14px; padding: 14px 16px; background: #fff; border: 2px solid #1E34C8; border-radius: 16px; font-family: 'Kantumruy Pro', sans-serif; font-size: 16px; font-weight: 500; line-height: 1.4; color: #0B2FA0; text-align: left; cursor: pointer; transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; }
+  .db-tile:hover { background: #1E34C8; color: #fff; box-shadow: 0 8px 20px rgba(30, 52, 200, 0.22); }
+  .db-tile:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  .db-tile .ic { width: 46px; height: 46px; flex: none; border-radius: 13px; background: #E6ECFD; color: #1E34C8; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease, color 0.2s ease; }
+  .db-tile:hover .ic { background: rgba(255, 255, 255, 0.18); color: #fff; }
+  .db-tx { background: #fff; border: 2px solid #1E34C8; border-radius: 18px; overflow: hidden; }
+  .db-empty { padding: 34px 20px; text-align: center; color: #6A78A0; font-size: 15px; }
+  .tx-row { display: flex; align-items: center; gap: 16px; padding: 16px 24px; border-bottom: 1px solid #EEF2FA; }
+  .tx-row:last-child { border-bottom: 0; }
+  .tx-ic { width: 42px; height: 42px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .tx-ic.in { background: #E4F5E9; color: #1E8A3C; }
+  .tx-ic.out { background: #FDE9E7; color: #C0392B; }
+  .tx-mid { flex: 1; min-width: 0; }
+  .tx-mid b { display: block; font-weight: 500; font-size: 15px; word-break: break-word; }
+  .tx-mid span { font-size: 13px; color: #6A78A0; }
+  .tx-amt { font-weight: 600; font-size: 16px; white-space: nowrap; }
+  .tx-amt.in { color: #1E8A3C; }
+  .tx-amt.out { color: #C0392B; }
+  .db-more { display: block; width: 100%; padding: 16px 24px; border: 0; border-top: 1px solid #EEF2FA; background: #F8FAFE; font-family: 'Kantumruy Pro', sans-serif; font-size: 15px; font-weight: 500; color: #1E34C8; text-align: center; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
+  .db-more:hover { background: #1E34C8; color: #fff; }
+  .db-more:focus-visible { outline: 2px solid var(--blue); outline-offset: -4px; }
+
+  /* ---- modal + toast ---- */
+  .md-ov { position: fixed; inset: 0; z-index: 1000; background: rgba(8, 20, 60, 0.5); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; padding: 20px; }
+  .md-ov.show { display: flex; }
+  .md-box { background: #fff; border-radius: 22px; width: min(560px, 100%); max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; }
+  .md-hd { display: flex; align-items: center; padding: 20px 26px; border-bottom: 1px solid #E8EEFA; }
+  .md-hd h3 { flex: 1; font-weight: 600; font-size: 20px; color: var(--blue); }
+  .md-x { border: 0; background: none; color: #8A97BC; cursor: pointer; display: flex; padding: 4px; border-radius: 8px; }
+  .md-x:hover { color: var(--blue); }
+  .md-x:focus-visible { outline: 2px solid var(--blue); }
+  .md-body { padding: 20px 26px 26px; overflow: auto; }
+  .md-row { display: flex; justify-content: space-between; gap: 20px; padding: 13px 0; border-bottom: 1px solid #EEF2FA; font-size: 15px; }
+  .md-row:last-child { border-bottom: 0; }
+  .md-row span { color: #6A78A0; flex: none; }
+  .md-row b { font-weight: 500; text-align: right; word-break: break-word; color: #17285C; }
+  .md-body .tx-row { padding-left: 0; padding-right: 0; }
+  .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px); background: #0F1F52; color: #fff; padding: 12px 22px; border-radius: 10px; font-size: 15px; z-index: 1100; opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; max-width: calc(100vw - 32px); text-align: center; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 1000px) {
+    .db-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .db-bar-in { padding: 12px 16px; }
+    .db-bar .lg-brand span { display: none; }
+    .db-main { padding: 24px 16px 60px; }
+    .db-bal { flex-wrap: wrap; padding: 24px 20px; }
+    .db-acct { order: 3; margin: 10px 0 0; width: 100%; }
+    .db-amounts { text-align: left; }
+    .db-amounts .amt { font-size: 26px; }
+    .db-grid { gap: 10px; }
+    .db-tile { flex-direction: column; align-items: flex-start; padding: 14px; font-size: 14.5px; }
+    .tx-row { padding: 14px 16px; }
+  }
+
+    /* ---- Bakong transfer ---- */
+    .bk-f { margin-top: 16px; }
+  .bk-f:first-child { margin-top: 0; }
+  .bk label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: #1B2A55; }
+  .bk input, .bk select { width: 100%; height: 46px; border: 1px solid #CBD6EE; border-radius: 10px; background: #fff; padding: 0 14px; font-family: 'Kantumruy Pro', sans-serif; font-size: 15px; color: #1B2A55; }
+  .bk input:focus, .bk select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(3, 49, 152, 0.15); }
+  .bk-ro { height: 46px; display: flex; align-items: center; padding: 0 14px; border-radius: 10px; background: #EDF2FC; font-weight: 500; letter-spacing: .08em; }
+  .bk-hint { font-size: 13px; margin-top: 6px; color: #6A78A0; min-height: 1em; }
+  .bk-hint.ok { color: #1E8A3C; font-weight: 500; }
+  .bk-hint.no { color: #C0392B; }
+  .bk-act { display: flex; gap: 12px; margin-top: 22px; }
+  .bk-act .lg-btn { margin-top: 0; }
+  .bk-act .lg-btn.ghost { background: #fff; color: var(--blue); border: 2px solid var(--blue); }
+  .bk-done { text-align: center; padding: 8px 0 2px; color: #1B2A55; }
+  .bk-done svg { color: var(--blue); }
+  .bk-done h3 { font-weight: 600; font-size: 21px; color: var(--blue); margin-top: 8px; }
+  .bk-done p { font-size: 15px; line-height: 1.8; margin-top: 10px; color: #3A4A78; }
+  .bk-done .big { font-size: 30px; font-weight: 600; color: var(--blue); }
+
+  /* Small screens */
+  @media (max-width: 900px) {
+    :root { --px: calc(100vw / 800); }
+    header { height: auto; flex-wrap: wrap; padding: 14px 16px 8px; row-gap: 10px; justify-content: center; }
+    .brand { gap: 12px; }
+    .brand img { width: 48px; height: 48px; }
+    .brand-kh { font-size: 19px; line-height: 1.4; white-space: normal; }
+    .brand-en { font-size: 13px; line-height: 1.4; white-space: normal; }
+    .divider { display: none; }
+    nav { margin-left: 0; gap: 28px; width: 100%; justify-content: center; }
+    nav a, nav .ph { font-size: 16px; padding-bottom: 4px; }
+    .hero { flex-direction: column; padding: 28px 18px 0; gap: 22px; }
+    .hero-photo { width: 100%; height: auto; aspect-ratio: 3 / 2; }
+    .hero-text { min-height: 0; }
+    .hero-text h2 { font-size: 19px; }
+    .hero-text blockquote { font-size: 15px; line-height: 1.95; margin-top: 14px; }
+    .hero-text .by { font-size: 15px; margin-top: 16px; }
+    .partners { width: calc(100% - 28px); border-radius: 20px; padding: 20px 16px 22px; }
+    .partners.domestic { margin-top: 40px; }
+    .partners h2 { font-size: 17px; }
+    .pgrid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+    .pgrid i { height: 28px; border-radius: 6px; }
+    .end { margin-top: 32px; padding-bottom: 48px; }
+    .about { padding: 24px 14px 48px; }
+    .about-box { border-radius: 18px; padding: 28px 20px 30px; }
+    .about-box h2 { font-size: 21px; }
+    .about-box p { font-size: 15px; line-height: 1.95; text-indent: 26px; margin-top: 18px; }
+    .ft-top { padding: 36px 16px 38px; }
+    .ft-brand { flex-direction: column; text-align: center; gap: 16px; }
+    .ft-brand img { width: 64px; height: 64px; }
+    .ft-name b { font-size: 19px; }
+    .ft-name span { font-size: 14px; }
+    .ft-btns { margin-left: 0; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .ft-btns button { min-width: 110px; height: 36px; font-size: 14px; }
+    .ft-cert { margin-top: 32px; padding-top: 30px; }
+    .ft-title { font-size: 15px; }
+    .ft-logos { gap: 10px; margin-top: 18px; }
+    .ft-logos .tile { width: 31%; height: 70px; padding: 6px; border-radius: 10px; }
+    .ft-copy { font-size: 14px; padding: 16px 12px; }
+    .view.auth.show { flex-direction: column; }
+    .auth-img { width: 100%; height: 30vh; position: static; }
+    .auth-side { min-height: 0; padding: 28px 16px 30px; }
+    .lg-title { font-size: 22px; margin-top: 28px; }
+    .lg-box { padding: 24px 18px; }
+    .rg-card { padding: 22px 18px 24px; margin-top: 24px; }
+    .rg-grid, .rg-rv { grid-template-columns: 1fr; }
+    .rg-tabs button { font-size: 13.5px; }
+    .auth-certs { padding-top: 36px; gap: 18px; }
+  }
+</style>
+</head>
+<body>
+<script src="splash.js"></script>
+
+<header>
+  <div class="brand">
+    <img id="brand-logo" src="LOGOIMGA.png" alt="ធនាគារ មហានគរ">
+    <div>
+      <div class="brand-kh">ធនាគារ មហានគរ</div>
+      <div class="brand-en">Mohanokor Bank of Cambodia Co., Ltd.</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <nav>
+    <a href="#home" id="nav-home" class="active">ទំព័រដើម</a>
+    <a href="#about" id="nav-about">អំពីធនាគារ</a>
+    <a href="#login" id="nav-login">ចុះឈ្មោះ</a>
+  </nav>
+</header>
+
+<main>
+  <!-- Home -->
+  <div class="view show" id="view-home">
+    <section class="hero">
+      <img class="hero-photo" src="novIMG.png" alt="">
+      <div class="hero-text">
+        <h2>រដ្ឋបាលគ្រប់គ្រង</h2>
+        <blockquote>"ក្នុងនាមថ្នាក់ដឹកនាំ និងបុគ្គលិកទាំងអស់នៃ ធនាគារ មហានគរ ខ្ញុំបាទសូមសម្តែងនូវការស្វាគមន៍យ៉ាងកក់ក្តៅចំពោះការចូលមកកាន់ប្រព័ន្ធធនាគារឌីជីថលរួមតែមួយរបស់យើងខ្ញុំ។ ប្រព័ន្ធបច្ចេកវិទ្យានេះត្រូវបានបង្កើតឡើងក្នុងគោលបំណងលើកកម្ពស់ប្រសិទ្ធភាពការងារ គ្រប់គ្រងសេវាកម្មធនាគារ សន្តិសុខហិរញ្ញវត្ថុ និងពង្រឹងកិច្ចដំណើរការប្រតិបត្តិការដើម្បីឲ្យកាន់តែមានតម្លាភាព ភាពត្រឹមត្រូវ និងសុវត្ថិភាពខ្ពស់។ យើងខ្ញុំជឿជាក់យ៉ាងមុតមាំថា ការធ្វើបរិវត្តកម្មឌីជីថលនេះ នឹងជួយសម្រួលដល់ការផ្តល់សេវាហិរញ្ញវត្ថុជូនដល់អតិថិជន និងប្រជាពលរដ្ឋគ្រប់រូប ប្រកបដោយភាពរហ័សទាន់ចិត្ត និងទំនុកចិត្តខ្ពស់បំផុត។ "</blockquote>
+        <div class="by">- <b>អ្នកឧកញ៉ា វង្ស សុភក្ត្រ,</b> Neak Oknha, Sopheak Vong</div>
+      </div>
+    </section>
+
+    <section class="partners domestic">
+      <h2>ដៃគូក្រុមហ៊ុនក្នុងស្រុក</h2>
+      <div class="pgrid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </section>
+
+    <div class="end">
+      <section class="partners">
+        <h2>ដៃគូក្រុមហ៊ុនអន្តរជាតិ</h2>
+        <div class="pgrid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="view" id="view-about">
+    <section class="about">
+      <div class="about-box">
+        <h2>អំពីធនាគារ មហានគរ</h2>
+        <p>ធនាគារ មហានគរ បានចាប់បដិសន្ធិឡើងដំបូងបង្អស់នៅក្នុងអំឡុងខែវិច្ឆិកា ឆ្នាំ២០០២ ក្នុងទម្រង់ជាគ្រឹះស្ថានមីក្រូហិរញ្ញវត្ថុឈានមុខគេមួយ ក្រោមក្របខណ្ឌនៃកិច្ចព្រមព្រៀងយុទ្ធសាស្ត្រ និងការទទួលបានអាជ្ញាប័ណ្ណផ្លូវការដើម្បីបម្រើសេវាហិរញ្ញវត្ថុជូនដល់ប្រជាពលរដ្ឋ។ ឆ្លងកាត់ដំណាក់កាលនៃការរីកចម្រើនឥតឈប់ឈរអស់រយៈពេលជាងពីរទសវត្សរ៍ គ្រឹះស្ថានបានពង្រីកវិសាលភាពប្រតិបត្តិការរបស់ខ្លួនយ៉ាងខ្លាំងក្លា រហូតឈានទៅប្រែក្លាយខ្លួនជា ធនាគារពាណិជ្ជពេញលេញ ផ្អែកលើការទំនុកចិត្ត ស្ថិរភាពហិរញ្ញវត្ថុ និងការគាំទ្រយ៉ាងពេញទំហឹងពីសំណាក់អតិថិជនជាតិ និងអន្តរជាតិ។</p>
+        <p>នៅក្នុងយុគសម័យបដិវត្តកម្មឌីជីថលនាពេលបច្ចុប្បន្ន ធនាគារ មហានគរ បានបោះជំហានយ៉ាងលឿនក្នុងការធ្វើទំនើបកម្មប្រព័ន្ធបច្ចេកវិទ្យាធនាគារ ដោយបានរួមបញ្ចូលប្រព័ន្ធទិន្នន័យស្នូលដែលមានសុវត្ថិភាពខ្ពស់ ស្របតាមស្តង់ដារអន្តរជាតិ (PCI DSS) ព្រមទាំងការតភ្ជាប់បណ្តាញទូទាត់ឌីជីថលជាតិដូចជា ប្រព័ន្ធបាគង (Bakong) និងប្រព័ន្ធ KHQR ជាដើម។ ការធ្វើបរិវត្តកម្មនេះ មិនត្រឹមតែជួយជម្រុញល្បឿននៃការផ្តល់សេវាហិរញ្ញវត្ថុឱ្យកាន់តែរហ័សទាន់ចិត្ត និងមានតម្លាភាពប៉ុណ្ណោះទេ ប៉ុន្តែថែមទាំងដើរតួជាកាតាលីករយ៉ាងសំខាន់ក្នុងការជួយគាំទ្រដល់អាជីវកម្មខ្នាតតូច និងមធ្យម ព្រមទាំងបន្តរក្សាឧត្តមភាពជាដៃគូហិរញ្ញវត្ថុដ៏គួរឱ្យទុកចិត្តបំផុតសម្រាប់ប្រជាពលរដ្ឋគ្រប់រូបក្នុងព្រះរាជាណាចក្រកម្ពុជា។</p>
+      </div>
+    </section>
+  </div>
+  <!-- Login -->
+  <div class="view auth" id="view-login">
+    <div class="auth-img"><img src="COMPIMG.png" alt=""></div>
+    <div class="auth-side">
+      <a class="lg-brand" href="#home"><img src="LOGOIMGA.png" alt=""><span><b>ធនាគារ មហានគរ</b><i>Mohanokor Bank of Cambodia Co., Ltd.</i></span></a>
+      <h1 class="lg-title">ចូលទៅកាន់គណនីរបស់លោកអ្នក</h1>
+      <div class="lg-card">
+        <div class="lg-box">
+          <div class="fld">
+            <label for="lg-id">លេខប្រព័ន្ធ</label>
+            <input id="lg-id" type="text" placeholder="លេខប្រព័ន្ធ" autocomplete="username">
+          </div>
+          <div class="lg-row">
+            <label for="lg-pw" style="margin:0">ពាក្យសម្ងាត់</label>
+            <a class="lg-link" href="#login">ភ្លេចពាក្យសម្ងាត់?</a>
+          </div>
+          <div class="fld" style="margin-top:8px">
+            <div class="pw">
+              <input id="lg-pw" type="password" placeholder="ពាក្យសម្ងាត់" autocomplete="current-password">
+              <button type="button" class="eye" aria-label="បង្ហាញ/លាក់ពាក្យសម្ងាត់"></button>
+            </div>
+          </div>
+          <button type="button" class="lg-btn" id="lg-btn">ចូល</button>
+          <p class="fe-g" id="lg-err"></p>
+        </div>
+        <p class="lg-or">ឬ <a class="lg-link" href="#login">ភ្លេចពាក្យសម្ងាត់?</a></p>
+        <div class="lg-div"></div>
+        <p class="lg-new">សម្រាប់ការចុះឈ្មោះអ្នកប្រើប្រាស់ថ្មី <a class="lg-link" href="#register">សូមចុចទីនេះ</a></p>
+      </div>
+      <div class="auth-certs">
+        <img class="one" src="ONEIMG.png" alt="PCI DSS Compliant">
+        <img class="two" src="TWOIMG.png" alt="">
+        <img class="three" src="THREEIMG.png" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- Register -->
+  <div class="view auth" id="view-register">
+    <div class="auth-img"><img src="COMPIMG.png" alt=""></div>
+    <div class="auth-side">
+      <a class="lg-brand" href="#home"><img src="LOGOIMGA.png" alt=""><span><b>ធនាគារ មហានគរ</b><i>Mohanokor Bank of Cambodia Co., Ltd.</i></span></a>
+      <div class="rg-card">
+        <h2 class="rg-title">ការបង្កើតគណនីរបស់លោកអ្នក</h2>
+        <p class="rg-sub">ដើម្បីបង្កើតគណនីថ្មីរបស់លោកអ្នក សូមបំពេញព័ត៌មានរបស់លោកអ្នកក្នុងផ្នែកចុះឈ្មោះខាងក្រោមជាមុនសិន</p>
+        <div class="rg-tabs">
+          <button type="button" class="on" data-step="1">1. ការចុះឈ្មោះ</button>
+          <button type="button" data-step="2">2. បញ្ជាក់ឡើងវិញ</button>
+        </div>
+        <div class="rg-pane show" id="rg-s1">
+          <div class="rg-note">ចំណាំ ៖ ចំពោះព័ត៌មានដែលមានសញ្ញា <span style="color:#C0392B">*</span> ជាសម្គាល់ ចាំបាច់ត្រូវតែបំពេញ!</div>
+          <div class="rg-grid">
+          <div class="fld"><label class="lab" for="rf-1">នាមត្រកូល <i>*</i></label><input id="rf-1" type="text" placeholder="នាមត្រកូល"></div>
+          <div class="fld"><label class="lab" for="rf-2">នាមខ្លួន <i>*</i></label><input id="rf-2" type="text" placeholder="នាមខ្លួន"></div>
+          <div class="fld full"><label class="lab" for="rf-3">ឈ្មោះគណនីប្រើប្រាស់ក្នុងប្រព័ន្ធ (ជាអក្សរឡាតាំង)</label><input id="rf-3" type="text" placeholder="ឈ្មោះគណនីប្រើប្រាស់ក្នុងប្រព័ន្ធ (ជាអក្សរឡាតាំង)"></div>
+          <div class="fld"><label class="lab" for="rf-4">លេខទូរស័ព្ទ <i>*</i></label><input id="rf-4" type="tel" placeholder="លេខទូរស័ព្ទ"></div>
+          <div class="fld"><label class="lab" for="rf-5">លេខអត្តសញ្ញាណប័ណ្ណ <i>*</i></label><input id="rf-5" type="text" placeholder="លេខអត្តសញ្ញាណប័ណ្ណ"></div>
+          <div class="fld full"><label class="lab" for="rf-6">អ៊ីមែល</label><input id="rf-6" type="email" placeholder="អ៊ីមែល"></div>
+          <div class="fld"><label class="lab" for="rf-7">ពាក្យសម្ងាត់ <i>*</i></label><div class="pw"><input id="rf-7" type="password" placeholder="ពាក្យសម្ងាត់" autocomplete="new-password"><button type="button" class="eye" aria-label="បង្ហាញ/លាក់ពាក្យសម្ងាត់"></button></div></div>
+          <div class="fld"><label class="lab" for="rf-8">បញ្ជាក់ពាក្យសម្ងាត់ <i>*</i></label><div class="pw"><input id="rf-8" type="password" placeholder="បញ្ជាក់ពាក្យសម្ងាត់" autocomplete="new-password"><button type="button" class="eye" aria-label="បង្ហាញ/លាក់ពាក្យសម្ងាត់"></button></div></div>
+          </div>
+          <label class="rg-check"><input id="rf-9" type="checkbox"><span>ខ្ញុំសូមធានាអះអាងនិងទទួលខុសត្រូវចំពោះមុខច្បាប់ថា ព័ត៌មានដែលបានបំពេញខាងលើនេះពិតជាត្រឹមត្រូវប្រាកដមែន។</span></label>
+        </div>
+        <div class="rg-pane" id="rg-s2"><div class="rg-rv" id="rg-rv"></div></div>
+        <div class="rg-foot" id="rg-foot"><button type="button" class="lg-btn" id="rg-next">បន្ទាប់</button></div>
+        <div id="rg-sub-row" style="display:none">
+          <p class="fe-g" id="rg-err"></p>
+          <div class="rg-foot"><button type="button" class="lg-btn" id="rg-submit">ដាក់ស្នើ</button></div>
+        </div>
+        <div class="rg-done" id="rg-done">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>
+          <h3>ការចុះឈ្មោះបានជោគជ័យ</h3>
+          <p>លេខប្រព័ន្ធរបស់លោកអ្នកគឺ</p>
+          <div class="big" id="rg-id"></div>
+          <p>លេខគណនីរបស់លោកអ្នកគឺ</p>
+          <div class="mid" id="rg-acct"></div>
+          <p>សូមរក្សាទុកលេខប្រព័ន្ធនេះ ដើម្បីប្រើសម្រាប់ចូលប្រព័ន្ធ។</p>
+          <a class="lg-btn" href="#login">ទៅកាន់ទំព័រចូល</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Dashboard -->
+  <div class="view" id="view-dash">
+    <div class="db-bar">
+      <div class="db-bar-in">
+        <a class="lg-brand" href="#home"><img src="LOGOIMGA.png" alt=""><span><b>ធនាគារ មហានគរ</b><i>Mohanokor Bank of Cambodia Co., Ltd.</i></span></a>
+        <span class="db-title">Digital Banking</span>
+        <button type="button" class="db-out" id="db-out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg><span>ចាកចេញ</span></button>
+      </div>
+    </div>
+    <div class="db-main">
+      <div class="db-hello">
+        <div class="db-ava"><svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4.5"/><path d="M3.5 21c0-4.6 3.8-7.5 8.5-7.5s8.5 2.9 8.5 7.5z"/></svg></div>
+        <div>
+          <h1>សូមស្វាគមន៍, <span id="db-name">User</span></h1>
+          <button type="button" id="db-prof">ពិនិត្យមើលព័ត៌មានផ្ទាល់ខ្លួន</button>
+        </div>
+      </div>
+      <section class="db-bal" id="db-bal">
+        <div class="db-wallet"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></div>
+        <div class="db-acct"><small>លេខគណនី</small><b id="db-acct">-</b><button type="button" id="db-copy">ចម្លងលេខគណនី</button></div>
+        <div class="db-amounts">
+          <div class="lab">សមតុល្យសរុប</div>
+          <div class="amt" id="db-khr">0.00 ៛</div>
+          <div class="amt" id="db-usd">0.00 $</div>
+        </div>
+        <button type="button" class="db-eye" id="db-eye" aria-label="បង្ហាញ/លាក់សមតុល្យ"></button>
+      </section>
+      <h2 class="db-sec">សេវាកម្ម</h2>
+      <div class="db-grid" id="db-grid"></div>
+      <h2 class="db-sec">ប្រតិបត្តិការថ្មីៗ</h2>
+      <div class="db-tx" id="db-tx"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="ft-top">
+    <div class="ft-brand">
+      <img src="LOGOIMGA.png" alt="">
+      <div class="ft-name">
+        <b>ធនាគារ មហានគរ</b>
+        <span>Mohanokor Bank of Cambodia Co., Ltd.</span>
+      </div>
+      <div class="ft-btns">
+        <button type="button">ទីតាំង</button>
+        <button type="button">លេខទំនាក់ទំនង</button>
+        <button type="button">អ៊ីមែល</button>
+      </div>
+    </div>
+    <div class="ft-cert">
+      <p class="ft-title">ធនាគារមហានគរ មានប្រព័ន្ធសុវត្ថិភាពខ្ពស់ ទទួលស្គាល់ដោយ៖</p>
+      <div class="ft-logos">
+        <div class="tile"><img src="ONEIMG.png" alt="PCI DSS Compliant"></div>
+        <div class="tile"><img src="TWOIMG.png" alt=""></div>
+        <div class="tile"><img src="THREEIMG.png" alt=""></div>
+      </div>
+    </div>
+  </div>
+  <div class="ft-copy">គេហទំព័រនេះ ជាការធ្វើលេងតែប៉ុណ្ណោះ - រក្សាសិទ្ធិ ២០២៦</div>
+</footer>
+
+<div class="md-ov" id="md-ov">
+  <div class="md-box" role="dialog" aria-modal="true" aria-labelledby="md-title">
+    <div class="md-hd">
+      <h3 id="md-title"></h3>
+      <button type="button" class="md-x" id="md-x" aria-label="បិទ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="md-body" id="md-body"></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<!-- Dashboard v2: service cards, hide balance, account number -->
+<script>
+(function () {
+  var S = function (p) { return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; };
+  var T = [
+    ['transfer', 'ផ្ទេរប្រាក់', '<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>'],
+    ['bakong', 'ទូទាត់តាមបាគង', '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h.01M21 21h-4v-4"/>'],
+    ['scan', 'ស្កេន KHQR', '<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/>'],
+    ['pay', 'បង់ប្រាក់', '<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>'],
+    ['bill', 'ទូទាត់វិក្កយបត្រ', '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 8h8M8 12h8M8 16h5"/>'],
+    ['topup', 'បញ្ចូលទឹកប្រាក់ទូរស័ព្ទ', '<rect width="12" height="20" x="6" y="2" rx="2"/><path d="M11 18h2"/>'],
+    ['card', 'បង្កើតបណ្ណ', '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>'],
+    ['saving', 'គណនីសន្សំ', '<path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'],
+    ['loan', 'កម្ចី', '<path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/>'],
+    ['rates', 'អត្រាប្តូរប្រាក់', '<path d="M7 7h13l-3-3M17 17H4l3 3"/>'],
+    ['account', 'ព័ត៌មានគណនី', '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'],
+    ['history', 'ប្រវត្តិប្រតិបត្តិការ', '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>']
+  ];
+  var grid = document.getElementById('db-grid');
+  T.forEach(function (t) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'db-tile'; b.setAttribute('data-act', t[0]);
+    b.innerHTML = '<span class="ic">' + S(t[2]) + '</span><span>' + t[1] + '</span>';
+    grid.appendChild(b);
+  });
+
+  var EYE = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var OFF = EYE.replace('</svg>', '<path d="M3 3l18 18"/></svg>');
+  var bal = document.getElementById('db-bal'), eye = document.getElementById('db-eye');
+  eye.innerHTML = EYE;
+  eye.addEventListener('click', function () {
+    var m = bal.classList.toggle('masked');
+    eye.innerHTML = m ? OFF : EYE;
+  });
+
+  var raw = '';
+  window.addEventListener('bank-data', function (e) {
+    if (e.detail.kind !== 'account') return;
+    raw = (e.detail.item && e.detail.item.accountNumber) || '';
+    document.getElementById('db-acct').textContent = raw ? raw.replace(/^(\d)(\d{5})(\d{5})$/, '$1 $2 $3') : '-';
+  });
+  var cp = document.getElementById('db-copy');
+  cp.addEventListener('click', function () {
+    if (!raw || !navigator.clipboard) return;
+    navigator.clipboard.writeText(raw).then(function () {
+      var old = cp.textContent; cp.textContent = 'បានចម្លង';
+      setTimeout(function () { cp.textContent = old; }, 1600);
+    });
+  });
+})();
+</script>
+
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var qsa = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+    function h(tag, cls, text) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text != null) e.textContent = text;
+      return e;
+    }
+
+    var views = { home: $('view-home'), about: $('view-about'), login: $('view-login'), register: $('view-register'), dashboard: $('view-dash') };
+    var links = { home: $('nav-home'), about: $('nav-about') };
+    var AUTH_ROUTES = { login: 1, register: 1, dashboard: 1 };
+    var current = null, busy = null, shown = false, lastRoute = '';
+    var auth = { known: false, user: null, profile: null };
+    var data = { account: null, tx: [] };
+
+    var MSG = {
+      req: 'សូមបំពេញព័ត៌មាននេះ',
+      user: 'ប្រើបានតែអក្សរឡាតាំង លេខ និងសញ្ញា . _ - ហើយយ៉ាងតិច ៣តួអក្សរ',
+      phone: 'លេខទូរស័ព្ទមិនត្រឹមត្រូវ',
+      nid: 'លេខអត្តសញ្ញាណប័ណ្ណត្រូវមាន ៩ ដល់ ១២ ខ្ទង់',
+      email: 'អ៊ីមែលមិនត្រឹមត្រូវ',
+      pw: 'ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច ៨តួអក្សរ រួមទាំងអក្សរ និងលេខ',
+      pw2: 'ពាក្យសម្ងាត់មិនត្រូវគ្នា',
+      chk: 'សូមធីកប្រអប់នេះដើម្បីបន្ត',
+      sid: 'លេខប្រព័ន្ធត្រូវមាន ៨ ខ្ទង់',
+      cred: 'លេខប្រព័ន្ធ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ',
+      net: 'មិនអាចតភ្ជាប់បានទេ សូមពិនិត្យអ៊ីនធឺណិត',
+      many: 'ព្យាយាមច្រើនដងពេក សូមសាកល្បងម្តងទៀតនៅពេលក្រោយ',
+      nocfg: 'ប្រព័ន្ធមិនទាន់តភ្ជាប់ Firebase ទេ (ត្រូវដាក់ firebaseConfig)',
+      perm: 'គ្មានសិទ្ធិអនុវត្តសកម្មភាពនេះ សូមពិនិត្យ Firestore rules',
+      gen: 'មានបញ្ហា សូមសាកល្បងម្តងទៀត',
+      soon: 'សេវានេះនឹងដំណើរការឆាប់ៗនេះ'
+    };
+    function errMsg(e) {
+      var c = (e && e.code) || '';
+      if (c === 'auth/invalid-credential' || c === 'auth/user-not-found' || c === 'auth/wrong-password' || c === 'auth/invalid-email') return MSG.cred;
+      if (c === 'auth/network-request-failed') return MSG.net;
+      if (c === 'auth/too-many-requests') return MSG.many;
+      if (c === 'permission-denied') return MSG.perm;
+      if (c === 'auth/operation-not-allowed' || c === 'auth/configuration-not-found') return MSG.nocfg;
+      return MSG.gen;
+    }
+
+    var toastT = null;
+    function toast(msg) {
+      var el = $('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastT);
+      toastT = setTimeout(function () { el.classList.remove('show'); }, 2600);
+    }
+
+    /* ---------- routing ---------- */
+    function route() {
+      var h2 = location.hash;
+      return h2 === '#about' ? 'about' : h2 === '#login' ? 'login' : h2 === '#register' ? 'register' : h2 === '#dashboard' ? 'dashboard' : 'home';
+    }
+    function setBodyMode(name) {
+      document.body.classList.toggle('auth-mode', !!AUTH_ROUTES[name]);
+      document.body.classList.toggle('dash-mode', name === 'dashboard');
+    }
+    function show(name, first) {
+      if (!first && name === lastRoute) return;
+      lastRoute = name;
+      Object.keys(links).forEach(function (k) { links[k].classList.toggle('active', k === name); });
+      if (name === 'register' && rgDone) resetRegister();
+      if (first) {
+        Object.keys(views).forEach(function (k) { views[k].classList.remove('show', 'visible'); });
+        setBodyMode(name);
+        views[name].classList.add('show', 'visible');
+        current = name;
+        return;
+      }
+      clearTimeout(busy);
+      var out = views[current], inn = views[name];
+      out.classList.remove('visible');
+      busy = setTimeout(function () {
+        out.classList.remove('show');
+        setBodyMode(name);
+        inn.classList.add('show');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        void inn.offsetWidth;
+        inn.classList.add('visible');
+        current = name;
+      }, 350);
+    }
+    function handle(fromAuth) {
+      var r = route();
+      if (fromAuth && shown && !AUTH_ROUTES[r]) return;
+      if (r === 'dashboard') {
+        if (!auth.known) return;
+        if (!auth.user) { location.replace('#login'); return; }
+        renderDash();
+      }
+      if ((r === 'login' || r === 'register') && auth.user) { location.replace('#dashboard'); return; }
+      show(r, !shown);
+      shown = true;
+    }
+    window.addEventListener('hashchange', function () { handle(false); });
+    window.addEventListener('bank-auth', function (e) {
+      auth = { known: true, user: e.detail.user, profile: e.detail.profile };
+      if (!auth.user) { data.account = null; data.tx = []; }
+      handle(true);
+    });
+    window.addEventListener('bank-data', function (e) {
+      if (e.detail.kind === 'account') data.account = e.detail.item;
+      else data.tx = e.detail.items;
+      renderDash();
+    });
+    setTimeout(function () { if (!auth.known) { auth.known = true; handle(true); } }, 4000);
+
+    /* ---------- helpers ---------- */
+    function setErr(el, msg) {
+      var f = el.closest('.fld'), e;
+      if (f) {
+        e = f.querySelector('.fe');
+        if (!e) { e = h('div', 'fe'); f.appendChild(e); }
+        f.classList.toggle('bad', !!msg);
+      } else {
+        var lab = el.closest('.rg-check');
+        e = lab.nextElementSibling;
+        if (!e || !e.classList.contains('fe')) { e = h('div', 'fe'); lab.parentNode.insertBefore(e, lab.nextSibling); }
+      }
+      e.textContent = msg || '';
+      e.classList.toggle('show', !!msg);
+    }
+    function setGen(id, msg) {
+      var e = $(id);
+      e.textContent = msg || '';
+      e.classList.toggle('show', !!msg);
+    }
+
+    /* ---------- password eye ---------- */
+    var EYE = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+    var EYE_OFF = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg>';
+    qsa('.eye').forEach(function (btn) {
+      btn.innerHTML = EYE;
+      btn.addEventListener('click', function () {
+        var input = btn.parentNode.querySelector('input');
+        var hidden = input.type === 'password';
+        input.type = hidden ? 'text' : 'password';
+        btn.innerHTML = hidden ? EYE_OFF : EYE;
+      });
+    });
+
+    /* ---------- login ---------- */
+    var lgId = $('lg-id'), lgPw = $('lg-pw'), lgBtn = $('lg-btn');
+    lgId.addEventListener('input', function () { setErr(lgId, ''); setGen('lg-err', ''); });
+    lgPw.addEventListener('input', function () { setErr(lgPw, ''); setGen('lg-err', ''); });
+    [lgId, lgPw].forEach(function (el) {
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+    });
+    lgBtn.addEventListener('click', doLogin);
+    async function doLogin() {
+      var id = lgId.value.trim(), pw = lgPw.value, bad = false;
+      setGen('lg-err', '');
+      if (!id) { setErr(lgId, MSG.req); bad = true; }
+      else if (!/^\d{8}$/.test(id)) { setErr(lgId, MSG.sid); bad = true; }
+      else setErr(lgId, '');
+      if (!pw) { setErr(lgPw, MSG.req); bad = true; } else setErr(lgPw, '');
+      if (bad) return;
+      var A = window.BankAuth;
+      if (!A || !A.configured) { setGen('lg-err', MSG.nocfg); return; }
+      lgBtn.disabled = true;
+      try { await A.login(id, pw); lgPw.value = ''; }
+      catch (e) { setGen('lg-err', errMsg(e)); }
+      finally { lgBtn.disabled = false; }
+    }
+
+    /* ---------- register ---------- */
+    var rf = ['rf-1', 'rf-2', 'rf-3', 'rf-4', 'rf-5', 'rf-6', 'rf-7', 'rf-8'];
+    var LABELS = {
+      'rf-1': 'នាមត្រកូល', 'rf-2': 'នាមខ្លួន', 'rf-3': 'ឈ្មោះគណនីប្រើប្រាស់ក្នុងប្រព័ន្ធ',
+      'rf-4': 'លេខទូរស័ព្ទ', 'rf-5': 'លេខអត្តសញ្ញាណប័ណ្ណ', 'rf-6': 'អ៊ីមែល',
+      'rf-7': 'ពាក្យសម្ងាត់', 'rf-8': 'បញ្ជាក់ពាក្យសម្ងាត់'
+    };
+    var FULL = { 'rf-3': 1, 'rf-6': 1 };
+    var rules = {
+      'rf-1': function (v) { return v.trim() ? '' : MSG.req; },
+      'rf-2': function (v) { return v.trim() ? '' : MSG.req; },
+      'rf-3': function (v) { v = v.trim(); return (!v || /^[A-Za-z0-9._-]{3,}$/.test(v)) ? '' : MSG.user; },
+      'rf-4': function (v) { v = v.replace(/[\s-]/g, ''); if (!v) return MSG.req; return /^(\+?855|0)\d{8,9}$/.test(v) ? '' : MSG.phone; },
+      'rf-5': function (v) { v = v.replace(/\s/g, ''); if (!v) return MSG.req; return /^\d{9,12}$/.test(v) ? '' : MSG.nid; },
+      'rf-6': function (v) { v = v.trim(); return (!v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) ? '' : MSG.email; },
+      'rf-7': function (v) { if (!v) return MSG.req; return (v.length >= 8 && /[A-Za-z]/.test(v) && /\d/.test(v)) ? '' : MSG.pw; },
+      'rf-8': function (v) { if (!v) return MSG.req; return v === $('rf-7').value ? '' : MSG.pw2; }
+    };
+    rf.forEach(function (id) { $(id).addEventListener('input', function () { setErr($(id), ''); }); });
+    $('rf-9').addEventListener('change', function () { setErr($('rf-9'), ''); });
+
+    function validate() {
+      var firstBad = null;
+      rf.forEach(function (id) {
+        var m = rules[id]($(id).value);
+        setErr($(id), m);
+        if (m && !firstBad) firstBad = $(id);
+      });
+      var cm = $('rf-9').checked ? '' : MSG.chk;
+      setErr($('rf-9'), cm);
+      if (cm && !firstBad) firstBad = $('rf-9');
+      if (firstBad) { firstBad.focus(); return false; }
+      return true;
+    }
+
+    var tabs = qsa('.rg-tabs button');
+    var rgDone = false;
+    function fillReview() {
+      var box = $('rg-rv');
+      box.textContent = '';
+      rf.forEach(function (id) {
+        var input = $(id), v = input.value.trim();
+        if (input.type === 'password' && input.value) v = new Array(input.value.length + 1).join('\u2022');
+        var d = h('div', FULL[id] ? 'full' : '');
+        d.appendChild(h('span', null, LABELS[id]));
+        d.appendChild(h('b', null, v || '\u2014'));
+        box.appendChild(d);
+      });
+    }
+    function setStep(n) {
+      if (n === 2) { if (!validate()) return; fillReview(); }
+      setGen('rg-err', '');
+      $('rg-s1').classList.toggle('show', n === 1);
+      $('rg-s2').classList.toggle('show', n === 2);
+      $('rg-foot').style.display = n === 1 ? '' : 'none';
+      $('rg-sub-row').style.display = n === 2 ? '' : 'none';
+      tabs.forEach(function (tb) { tb.classList.toggle('on', tb.getAttribute('data-step') === String(n)); });
+    }
+    tabs.forEach(function (tb) {
+      tb.addEventListener('click', function () { setStep(parseInt(tb.getAttribute('data-step'), 10)); });
+    });
+    $('rg-next').addEventListener('click', function () { setStep(2); });
+
+    $('rg-submit').addEventListener('click', async function () {
+      var btn = $('rg-submit');
+      if (!validate()) { setStep(1); return; }
+      var A = window.BankAuth;
+      if (!A || !A.configured) { setGen('rg-err', MSG.nocfg); return; }
+      btn.disabled = true;
+      btn.textContent = 'កំពុងដាក់ស្នើ...';
+      setGen('rg-err', '');
+      try {
+        var res = await A.register({
+          familyName: $('rf-1').value.trim(),
+          givenName: $('rf-2').value.trim(),
+          username: $('rf-3').value.trim(),
+          phone: $('rf-4').value.replace(/[\s-]/g, ''),
+          idNumber: $('rf-5').value.replace(/\s/g, ''),
+          email: $('rf-6').value.trim(),
+          password: $('rf-7').value
+        });
+        showDone(res);
+      } catch (e) {
+        setGen('rg-err', errMsg(e));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'ដាក់ស្នើ';
+      }
+    });
+    function showDone(res) {
+      rgDone = true;
+      $('rg-id').textContent = res.id;
+      $('rg-acct').textContent = res.accountNumber;
+      qs2('.rg-tabs').style.display = 'none';
+      $('rg-s1').classList.remove('show');
+      $('rg-s2').classList.remove('show');
+      $('rg-foot').style.display = 'none';
+      $('rg-sub-row').style.display = 'none';
+      $('rg-done').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function qs2(s) { return document.querySelector(s); }
+    function resetRegister() {
+      rgDone = false;
+      rf.forEach(function (id) { $(id).value = ''; setErr($(id), ''); });
+      $('rf-9').checked = false;
+      setErr($('rf-9'), '');
+      $('rg-done').classList.remove('show');
+      qs2('.rg-tabs').style.display = '';
+      setStep(1);
+    }
+
+    /* ---------- dashboard ---------- */
+    var NF = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    function money(n, cur) { return NF.format(Number(n) || 0) + (cur === 'USD' ? ' $' : ' \u17DB'); }
+    function fmtDate(ms) {
+      var d = new Date(ms);
+      try { return d.toLocaleDateString('km-KH', { day: 'numeric', month: 'long', year: 'numeric' }); }
+      catch (e) { return d.toLocaleDateString(); }
+    }
+    function fullName() {
+      var p = auth.profile;
+      return p && (p.familyName || p.givenName) ? ((p.familyName || '') + ' ' + (p.givenName || '')).trim() : 'User';
+    }
+    var ARROW_IN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10M17 8v9H8"/></svg>';
+    var ARROW_OUT = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+    function txRow(t) {
+      var inn = t.type === 'credit';
+      var row = h('div', 'tx-row');
+      var ic = h('div', 'tx-ic ' + (inn ? 'in' : 'out'));
+      ic.innerHTML = inn ? ARROW_IN : ARROW_OUT;
+      var mid = h('div', 'tx-mid');
+      mid.appendChild(h('b', null, t.note || (inn ? 'ទទួលប្រាក់' : 'បង់ប្រាក់')));
+      mid.appendChild(h('span', null, fmtDate(t.createdAt)));
+      row.appendChild(ic); row.appendChild(mid);
+      row.appendChild(h('div', 'tx-amt ' + (inn ? 'in' : 'out'), (inn ? '+' : '-') + money(t.amount, t.currency)));
+      return row;
+    }
+    function sortedTx() { return data.tx.slice().sort(function (a, b) { return b.createdAt - a.createdAt; }); }
+    function fillTx(box, list) {
+      box.textContent = '';
+      if (!list.length) { box.appendChild(h('div', 'db-empty', 'មិនទាន់មានប្រតិបត្តិការទេ')); return; }
+      list.forEach(function (t) { box.appendChild(txRow(t)); });
+    }
+    function renderDash() {
+      if (!auth.user) return;
+      $('db-name').textContent = fullName();
+      var a = data.account || {};
+      $('db-khr').textContent = money(a.balanceKHR, 'KHR');
+      $('db-usd').textContent = money(a.balanceUSD, 'USD');
+      var all = sortedTx();
+      fillTx($('db-tx'), all.slice(0, 6));
+      if (all.length) {
+        var more = h('button', 'db-more', 'មើលគណនី');
+        more.type = 'button';
+        more.addEventListener('click', showHistory);
+        $('db-tx').appendChild(more);
+      }
+      if ($('md-ov').classList.contains('show') && modalKind === 'history') fillTx($('md-body'), sortedTx());
+    }
+
+    /* ---------- modal ---------- */
+    var modalKind = '';
+    function openModal(kind, title) {
+      modalKind = kind;
+      $('md-title').textContent = title;
+      $('md-body').textContent = '';
+      $('md-ov').classList.add('show');
+      $('md-x').focus();
+    }
+    function closeModal() { modalKind = ''; $('md-ov').classList.remove('show'); }
+    function rows(list) {
+      var box = $('md-body');
+      list.forEach(function (r) {
+        var d = h('div', 'md-row');
+        d.appendChild(h('span', null, r[0]));
+        d.appendChild(h('b', null, r[1] || '\u2014'));
+        box.appendChild(d);
+      });
+    }
+    $('md-x').addEventListener('click', closeModal);
+    $('md-ov').addEventListener('click', function (e) { if (e.target === $('md-ov')) closeModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+    function showProfile() {
+      var p = auth.profile || {};
+      openModal('profile', 'ព័ត៌មានផ្ទាល់ខ្លួន');
+      rows([['ឈ្មោះ', fullName()], ['លេខប្រព័ន្ធ', auth.user ? auth.user.id : ''], ['លេខទូរស័ព្ទ', p.phone], ['លេខអត្តសញ្ញាណប័ណ្ណ', p.idNumber], ['អ៊ីមែល', p.email]]);
+    }
+    function showAccount() {
+      var a = data.account || {};
+      openModal('account', 'ព័ត៌មានគណនី');
+      rows([['ឈ្មោះគណនី', fullName()], ['លេខគណនី', a.accountNumber], ['សមតុល្យ (រៀល)', money(a.balanceKHR, 'KHR')], ['សមតុល្យ (ដុល្លារ)', money(a.balanceUSD, 'USD')]]);
+    }
+    function showHistory() {
+      openModal('history', 'ប្រវត្តិប្រតិបត្តិការ');
+      fillTx($('md-body'), sortedTx());
+    }
+    function showBakong() {
+      var A = window.BankAuth;
+      if (!A || !A.transfer) { toast(MSG.nocfg); return; }
+      openModal('bakong', 'ទូទាត់តាមបាគង');
+      var box = $('md-body'), who = null, tok = 0;
+      var v = { cur: 'KHR', to: '', amt: '', note: '' };
+      var raw = function (s) { return s.replace(/\s/g, ''); };
+      function acct() { return data.account || {}; }
+      function bal(c) { return Number(c === 'USD' ? acct().balanceUSD : acct().balanceKHR) || 0; }
+      function say(msg) { setGen('bk-err', msg); }
+
+      function form() {
+        box.innerHTML =
+          '<div class="bk">' +
+          '<div class="bk-f"><label>ពីគណនី</label><div class="bk-ro" id="bk-from"></div></div>' +
+          '<div class="bk-f"><label for="bk-cur">រូបិយប័ណ្ណ</label><select id="bk-cur"><option value="KHR">រៀល (\u17DB)</option><option value="USD">ដុល្លារ ($)</option></select><div class="bk-hint" id="bk-bal"></div></div>' +
+          '<div class="bk-f"><label for="bk-to">លេខគណនីអ្នកទទួល</label><input id="bk-to" type="text" inputmode="numeric" maxlength="14" placeholder="លេខគណនី ១១ ខ្ទង់" autocomplete="off"><div class="bk-hint" id="bk-who"></div></div>' +
+          '<div class="bk-f"><label for="bk-amt">ចំនួនទឹកប្រាក់</label><input id="bk-amt" type="text" inputmode="decimal" placeholder="0" autocomplete="off"></div>' +
+          '<div class="bk-f"><label for="bk-note">កំណត់ចំណាំ (មិនបង្ខំ)</label><input id="bk-note" type="text" maxlength="60" placeholder="កំណត់ចំណាំ"></div>' +
+          '<p class="fe-g" id="bk-err"></p>' +
+          '<div class="bk-act"><button type="button" class="lg-btn" id="bk-go">បន្ទាប់</button></div>' +
+          '</div>';
+        var cur = $('bk-cur'), to = $('bk-to'), amt = $('bk-amt'), note = $('bk-note');
+        cur.value = v.cur; to.value = v.to; amt.value = v.amt; note.value = v.note;
+        $('bk-from').textContent = acct().accountNumber || '-';
+        function showBal() { $('bk-bal').textContent = 'សមតុល្យអាចប្រើបាន៖ ' + money(bal(cur.value), cur.value); }
+        showBal();
+        cur.addEventListener('change', function () { showBal(); say(''); });
+        [to, amt, note].forEach(function (el) { el.addEventListener('input', function () { say(''); }); });
+
+        function look() {
+          var n = raw(to.value), hint = $('bk-who');
+          who = null; hint.className = 'bk-hint';
+          if (!/^\d{11}$/.test(n)) { hint.textContent = ''; return; }
+          var my = ++tok;
+          hint.textContent = 'កំពុងស្វែងរក...';
+          A.lookup(n).then(function (r) {
+            if (my !== tok) return;
+            if (r) { who = r; hint.textContent = '\u2713 ' + r.name; hint.className = 'bk-hint ok'; }
+            else { hint.textContent = 'រកមិនឃើញគណនីនេះទេ'; hint.className = 'bk-hint no'; }
+          }, function (e) {
+            if (my !== tok) return;
+            hint.textContent = errMsg(e); hint.className = 'bk-hint no';
+          });
+        }
+
+        
+        to.addEventListener('input', look);
+        look();
+
+        $('bk-go').addEventListener('click', function () {
+          var n = raw(to.value), c = cur.value, s = amt.value.replace(/,/g, '').trim();
+          if (!/^\d{11}$/.test(n)) { say('លេខគណនីត្រូវមាន ១១ ខ្ទង់'); return; }
+          if (n === acct().accountNumber) { say('មិនអាចផ្ទេរទៅគណនីខ្លួនឯងបានទេ'); return; }
+          if (!who) { say('រកមិនឃើញគណនីអ្នកទទួល'); return; }
+          if (!(c === 'USD' ? /^\d+(\.\d{1,2})?$/ : /^\d+$/).test(s) || !(parseFloat(s) > 0)) {
+            say(c === 'USD' ? 'ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ (ទសភាគអតិបរមា ២ ខ្ទង់)' : 'ចំនួនទឹកប្រាក់មិនត្រឹមត្រូវ (ត្រូវជាចំនួនគត់)');
+            return;
+          }
+          var num = Math.round(parseFloat(s) * 100) / 100;
+          if (num > bal(c)) { say('សមតុល្យមិនគ្រប់គ្រាន់'); return; }
+          v = { cur: c, to: n, amt: s, note: note.value.trim() };
+          review(num);
+        });
+      }
+
+      function review(num) {
+        box.innerHTML = '<div class="bk"><div id="bk-rv"></div><p class="fe-g" id="bk-err"></p>' +
+          '<div class="bk-act"><button type="button" class="lg-btn ghost" id="bk-back">ត្រឡប់ក្រោយ</button><button type="button" class="lg-btn" id="bk-ok">បញ្ជាក់ការផ្ទេរ</button></div></div>';
+        var rv = $('bk-rv');
+        [['ពីគណនី', acct().accountNumber], ['ទៅកាន់', who.name], ['លេខគណនីអ្នកទទួល', v.to],
+         ['ចំនួនទឹកប្រាក់', money(num, v.cur)], ['កំណត់ចំណាំ', v.note]].forEach(function (r) {
+          var d = h('div', 'md-row');
+          d.appendChild(h('span', null, r[0]));
+          d.appendChild(h('b', null, r[1] || '\u2014'));
+          rv.appendChild(d);
+        });
+        $('bk-back').addEventListener('click', form);
+        $('bk-ok').addEventListener('click', function () {
+          var ok = $('bk-ok'), back = $('bk-back');
+          ok.disabled = true; back.disabled = true; ok.textContent = 'កំពុងដំណើរការ...';
+          say('');
+          A.transfer({ toAcct: v.to, currency: v.cur, amount: num, note: v.note, fromName: fullName() }).then(function () {
+            done(num);
+          }, function (e) {
+            ok.disabled = false; back.disabled = false; ok.textContent = 'បញ្ជាក់ការផ្ទេរ';
+            var c = e && e.code;
+            say(c === 'app/no-recipient' ? 'រកមិនឃើញគណនីអ្នកទទួល' : c === 'app/self' ? 'មិនអាចផ្ទេរទៅគណនីខ្លួនឯងបានទេ' : errMsg(e));
+          });
+        });
+      }
+
+      function done(num) {
+        box.innerHTML = '<div class="bk-done">' +
+          '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>' +
+          '<h3>ការផ្ទេរប្រាក់បានជោគជ័យ</h3><div class="big" id="bk-d-amt"></div><p id="bk-d-to"></p>' +
+          '<div class="bk-act"><button type="button" class="lg-btn" id="bk-close">បិទ</button></div></div>';
+        $('bk-d-amt').textContent = money(num, v.cur);
+        $('bk-d-to').textContent = 'ទៅកាន់ ' + who.name;
+        $('bk-close').addEventListener('click', closeModal);
+      }
+      form();
+    }
+    $('db-prof').addEventListener('click', showProfile);
+    qsa('.db-tile').forEach(function (tile) {
+      tile.addEventListener('click', function () {
+        var act = tile.getAttribute('data-act');
+        if (act === 'account') showAccount();
+        else if (act === 'history') showHistory();
+        else if (act === 'bakong') location.href = 'bakong.html';
+        else if (act === 'scan') location.href = 'scan.html';
+        else if (act === 'bill') location.href = 'pay.html';
+        else if (act === 'card') location.href = 'card.html';
+        else toast(MSG.soon);
+      });
+    });
+    $('db-out').addEventListener('click', function () {
+      var A = window.BankAuth;
+      var go = function () { location.hash = '#home'; };
+      if (A && A.logout) A.logout().then(go, go); else go();
+    });
+
+    handle(false);
+  })();
+</script>
+
+<script type="module">
+  // ===================== Firebase configuration =====================
+  // Same project as the Ministry site. Bank data uses its own collections (bank_*) and its own login domain.
+  const firebaseConfig = {
+    apiKey: "AIzaSyC821EXMqnw-J7c0XV06X860gqSEhBgp00",
+    authDomain: "moit-de6db.firebaseapp.com",
+    projectId: "moit-de6db",
+    storageBucket: "moit-de6db.firebasestorage.app",
+    messagingSenderId: "734578370872",
+    appId: "1:734578370872:web:806dc4ee7437b38909f9cd"
+  };
+  // ===================================================================
+
+  const EMAIL_DOMAIN = 'mnk-bank.local';
+  const CDN = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const api = {
+    configured: !Object.values(firebaseConfig).some(function (v) { return String(v).indexOf('YOUR_') !== -1; }),
+    busy: false
+  };
+  window.BankAuth = api;
+
+  function emit(user, profile) {
+    window.dispatchEvent(new CustomEvent('bank-auth', {
+      detail: { user: user ? { id: String(user.email || '').split('@')[0] } : null, profile: profile || null }
+    }));
+  }
+  function emitData(kind, payload) {
+    window.dispatchEvent(new CustomEvent('bank-data', { detail: Object.assign({ kind: kind }, payload) }));
+  }
+  function genId() {
+    return String(10000000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 90000000));
+  }
+  function genAccount() {
+    const r = crypto.getRandomValues(new Uint32Array(2));
+    return '1' + String(r[0] % 100000).padStart(5, '0') + String(r[1] % 100000).padStart(5, '0');
+  }
+
+  if (!api.configured) {
+    emit(null);
+  } else {
+    try {
+      const appMod = await import(CDN + 'firebase-app.js');
+      const authMod = await import(CDN + 'firebase-auth.js');
+      const fsMod = await import(CDN + 'firebase-firestore.js');
+      const app = appMod.initializeApp(firebaseConfig, 'bank');
+      const auth = authMod.getAuth(app);
+      const db = fsMod.getFirestore(app);
+
+      api.login = function (id, pw) {
+        return authMod.signInWithEmailAndPassword(auth, id + '@' + EMAIL_DOMAIN, pw);
+      };
+      api.logout = function () { return authMod.signOut(auth); };
+      api.lookup = async function (acct) {
+        const s = await fsMod.getDoc(fsMod.doc(db, 'bank_lookup', acct));
+        return s.exists() ? s.data() : null;
+      };
+
+      api.transfer = async function (t) {
+        const me = auth.currentUser;
+        const to = await api.lookup(t.toAcct);
+        if (!to) throw { code: 'app/no-recipient' };
+        if (to.uid === me.uid) throw { code: 'app/self' };
+        const f = t.currency === 'USD' ? 'balanceUSD' : 'balanceKHR';
+        const amt = Math.round(t.amount * 100) / 100;
+        const batch = fsMod.writeBatch(db);
+        batch.update(fsMod.doc(db, 'bank_accounts', me.uid), { [f]: fsMod.increment(-amt) });
+        batch.update(fsMod.doc(db, 'bank_accounts', to.uid), { [f]: fsMod.increment(amt) });
+        batch.set(fsMod.doc(fsMod.collection(db, 'bank_tx')), {
+          uid: me.uid, type: 'debit', amount: amt, currency: t.currency,
+          note: 'ផ្ទេរទៅ ' + to.name + (t.note ? ' - ' + t.note : ''),
+          createdAt: fsMod.serverTimestamp()
+        });
+        batch.set(fsMod.doc(fsMod.collection(db, 'bank_tx')), {
+          uid: to.uid, fromUid: me.uid, type: 'credit', amount: amt, currency: t.currency,
+          note: 'ទទួលពី ' + t.fromName + (t.note ? ' - ' + t.note : ''),
+          createdAt: fsMod.serverTimestamp()
+        });
+        await batch.commit();
+      };
+      api.invoice = async function (ref) {
+        const s = await fsMod.getDoc(fsMod.doc(db, 'payInvoices', ref));
+        return s.exists() ? s.data() : null;
+      };
+
+      api.payInvoice = async function (t) {
+        const me = auth.currentUser;
+        const iref = fsMod.doc(db, 'payInvoices', t.ref);
+        const s = await fsMod.getDoc(iref);
+        if (!s.exists()) throw { code: 'app/no-invoice' };
+        const inv = s.data();
+        if (inv.status !== 'pending') throw { code: 'app/expired' };
+        if (inv.createdAt && Date.now() > inv.createdAt.toMillis() + 180000) throw { code: 'app/expired' };
+        if (inv.toAcct !== t.toAcct) throw { code: 'app/wrong-acct' };
+        if (inv.toUid === me.uid) throw { code: 'app/self' };
+        const f = inv.currency === 'USD' ? 'balanceUSD' : 'balanceKHR';
+        const note = 'ថ្លៃសេវា ' + inv.label + ' (' + t.ref + ')';
+        const batch = fsMod.writeBatch(db);
+        batch.update(fsMod.doc(db, 'bank_accounts', me.uid), { [f]: fsMod.increment(-inv.amount) });
+        batch.update(fsMod.doc(db, 'bank_accounts', inv.toUid), { [f]: fsMod.increment(inv.amount) });
+        batch.set(fsMod.doc(db, 'bank_tx', 'inv_' + t.ref), {
+          uid: inv.toUid, fromUid: me.uid, type: 'credit', amount: inv.amount, currency: inv.currency,
+          note: 'ទទួលពី ' + t.fromName + ' - ' + note, createdAt: fsMod.serverTimestamp()
+        });
+        batch.set(fsMod.doc(fsMod.collection(db, 'bank_tx')), {
+          uid: me.uid, type: 'debit', amount: inv.amount, currency: inv.currency,
+          note: note, createdAt: fsMod.serverTimestamp()
+        });
+        batch.update(iref, { status: 'paid', paidAt: fsMod.serverTimestamp(), payerName: t.fromName });
+        await batch.commit();
+      };
+
+      // Creates the account with a generated 8-digit system ID and an 11-digit account number (zero balances).
+      api.register = async function (d) {
+        api.busy = true;
+        try {
+          let cred = null, id = '';
+          for (let i = 0; i < 8 && !cred; i++) {
+            id = genId();
+            try {
+              cred = await authMod.createUserWithEmailAndPassword(auth, id + '@' + EMAIL_DOMAIN, d.password);
+            } catch (e) {
+              if (e.code !== 'auth/email-already-in-use') throw e;
+            }
+          }
+          if (!cred) throw { code: 'app/id-failed' };
+          const accountNumber = genAccount();
+          try {
+            const batch = fsMod.writeBatch(db);
+            batch.set(fsMod.doc(db, 'bank_users', cred.user.uid), {
+              systemId: id, accountNumber: accountNumber,
+              familyName: d.familyName, givenName: d.givenName, username: d.username,
+              phone: d.phone, idNumber: d.idNumber, email: d.email,
+              createdAt: fsMod.serverTimestamp()
+            });
+            batch.set(fsMod.doc(db, 'bank_accounts', cred.user.uid), {
+              uid: cred.user.uid, accountNumber: accountNumber,
+              balanceKHR: 0, balanceUSD: 0,
+              createdAt: fsMod.serverTimestamp()
+            });
+            batch.set(fsMod.doc(db, 'bank_lookup', accountNumber), {
+              uid: cred.user.uid, name: (d.familyName + ' ' + d.givenName).trim()
+            });
+            await batch.commit();
+          } catch (e) {
+            try { await cred.user.delete(); } catch (_) {}
+            throw e;
+          }
+          await authMod.signOut(auth);
+          return { id: id, accountNumber: accountNumber };
+        } finally {
+          api.busy = false;
+          emit(auth.currentUser, null);
+        }
+      };
+
+      let unsubs = [];
+      function stopWatch() { unsubs.forEach(function (f) { f(); }); unsubs = []; }
+
+      authMod.onAuthStateChanged(auth, async function (user) {
+        if (api.busy) return;
+        stopWatch();
+        if (!user) {
+          emitData('account', { item: null });
+          emitData('tx', { items: [] });
+          emit(null);
+          return;
+        }
+        let profile = null;
+        try {
+          const snap = await fsMod.getDoc(fsMod.doc(db, 'bank_users', user.uid));
+          if (snap.exists()) profile = snap.data();
+        } catch (e) { console.error('profile', e); }
+        if (profile && profile.accountNumber) {
+          try {
+            const lref = fsMod.doc(db, 'bank_lookup', profile.accountNumber);
+            if (!(await fsMod.getDoc(lref)).exists()) {
+              await fsMod.setDoc(lref, { uid: user.uid, name: ((profile.familyName || '') + ' ' + (profile.givenName || '')).trim() });
+            }
+          } catch (e) { console.error('lookup backfill', e); }
+        }
+        
+        unsubs.push(fsMod.onSnapshot(fsMod.doc(db, 'bank_accounts', user.uid), function (s) {
+          emitData('account', { item: s.exists() ? s.data() : null });
+        }, function (err) { console.error('account listener', err); }));
+
+        unsubs.push(fsMod.onSnapshot(fsMod.query(fsMod.collection(db, 'bank_tx'), fsMod.where('uid', '==', user.uid)), function (snap) {
+          emitData('tx', {
+            items: snap.docs.map(function (d) {
+              const v = d.data();
+              return Object.assign({ id: d.id }, v, {
+                createdAt: v.createdAt && v.createdAt.toMillis ? v.createdAt.toMillis() : Date.now()
+              });
+            })
+          });
+        }, function (err) { console.error('tx listener', err); }));
+
+        emit(user, profile);
+      });
+    } catch (e) {
+      console.error('Firebase failed to load', e);
+      api.configured = false;
+      emit(null);
+    }
+  }
+</script>
+</body>
+</html>
